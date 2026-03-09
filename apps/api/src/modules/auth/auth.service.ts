@@ -3,6 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -11,6 +12,7 @@ import { HashingUtil } from '../../utils/hashing';
 import { EmailService } from '../email/email.service';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RegisterCompanyDto } from './dto/register-company.dto';
 import { RegisterDriverDto } from './dto/register-driver.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -22,6 +24,7 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService,
     private emailService: EmailService,
+    private configService: ConfigService,
   ) {}
 
   async registerCompany(dto: RegisterCompanyDto) {
@@ -31,7 +34,7 @@ export class AuthService {
     const hashedPassword = await HashingUtil.hash(dto.password);
     const verificationToken = HashingUtil.generateToken();
 
-    const company = await this.userModel.create({
+    await this.userModel.create({
       email: dto.email,
       password: hashedPassword,
       role: Role.COMPANY,
@@ -58,7 +61,7 @@ export class AuthService {
     const hashedPassword = await HashingUtil.hash(dto.password);
     const verificationToken = HashingUtil.generateToken();
 
-    const driver = await this.userModel.create({
+    await this.userModel.create({
       email: dto.email,
       password: hashedPassword,
       role: Role.DRIVER,
@@ -97,10 +100,21 @@ export class AuthService {
       throw new UnauthorizedException('Account is deactivated');
 
     const payload = { sub: user._id, email: user.email, role: user.role };
-    const token = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload);
+    const refreshToken = this.jwtService.sign(payload, {
+      secret:
+        this.configService.get('jwt.refreshSecret') ||
+        'refresh-secret-change-me',
+      expiresIn: this.configService.get('jwt.refreshExpiresIn') || '30d',
+    });
+
+    user.refreshToken = await HashingUtil.hash(refreshToken);
+    user.refreshTokenExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    await user.save();
 
     return {
-      access_token: token,
+      access_token: accessToken,
+      refresh_token: refreshToken,
       user: {
         id: user._id,
         email: user.email,
@@ -108,6 +122,46 @@ export class AuthService {
         isVerified: user.isVerified,
       },
     };
+  }
+
+  async refreshToken(dto: RefreshTokenDto) {
+    try {
+      const payload = this.jwtService.verify(dto.refreshToken, {
+        secret: this.configService.get('jwt.refreshSecret'),
+      });
+
+      const user = await this.userModel
+        .findById(payload.sub)
+        .select('+refreshToken');
+      if (!user || !user.isActive || !user.refreshToken)
+        throw new UnauthorizedException();
+
+      const isValid = await HashingUtil.compare(
+        dto.refreshToken,
+        user.refreshToken,
+      );
+      if (
+        !isValid ||
+        !user.refreshTokenExpires ||
+        user.refreshTokenExpires < new Date()
+      )
+        throw new UnauthorizedException();
+
+      const newPayload = { sub: user._id, email: user.email, role: user.role };
+      const accessToken = this.jwtService.sign(newPayload);
+
+      return { access_token: accessToken };
+    } catch {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
+  async logout(userId: string) {
+    await this.userModel.findByIdAndUpdate(userId, {
+      refreshToken: null,
+      refreshTokenExpires: null,
+    });
+    return { message: 'Logged out successfully' };
   }
 
   async verifyEmail(dto: VerifyEmailDto) {
