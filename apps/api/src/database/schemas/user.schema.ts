@@ -46,7 +46,7 @@ export class User extends Document {
 export const UserSchema = SchemaFactory.createForClass(User);
 
 @Schema()
-export class Driver extends User {
+export class Driver {
   @Prop({ required: true })
   fullName: string;
 
@@ -69,7 +69,7 @@ export class Driver extends User {
 export const DriverSchema = SchemaFactory.createForClass(Driver);
 
 @Schema()
-export class Company extends User {
+export class Company {
   @Prop({ required: true })
   companyName: string;
 

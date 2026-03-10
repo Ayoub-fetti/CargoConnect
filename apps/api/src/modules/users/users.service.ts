@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, Role } from '../../database/schemas/user.schema';
@@ -30,12 +34,14 @@ export class UsersService {
 
   async updateAvatar(userId: string, path: string) {
     const user = await this.userModel.findById(userId);
-    if (!user || user.role !== Role.DRIVER) throw new BadRequestException('Invalid user');
-    
+    if (!user) throw new BadRequestException('User not found');
+    if (user.role.toString() !== 'DRIVER')
+      throw new BadRequestException('Only drivers can upload avatars');
+
     if ((user as any).avatar) {
       await fs.unlink((user as any).avatar).catch(() => {});
     }
-    
+
     (user as any).avatar = path;
     await user.save();
     return { avatar: path };
@@ -43,18 +49,23 @@ export class UsersService {
 
   async updateLogo(userId: string, path: string) {
     const user = await this.userModel.findById(userId);
-    if (!user || user.role !== Role.COMPANY) throw new BadRequestException('Invalid user');
-    
+    if (!user || user.role !== Role.COMPANY)
+      throw new BadRequestException('Invalid user');
+
     if ((user as any).logo) {
       await fs.unlink((user as any).logo).catch(() => {});
     }
-    
+
     (user as any).logo = path;
     await user.save();
     return { logo: path };
   }
 
-  async uploadDocument(userId: string, file: Express.Multer.File, type: string) {
+  async uploadDocument(
+    userId: string,
+    file: Express.Multer.File,
+    type: string,
+  ) {
     return this.documentsService.uploadDocument(userId, file, type);
   }
 

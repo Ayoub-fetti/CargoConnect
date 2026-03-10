@@ -34,17 +34,19 @@ export class AuthService {
     const hashedPassword = await HashingUtil.hash(dto.password);
     const verificationToken = HashingUtil.generateToken();
 
-    await this.userModel.create({
+    const CompanyModel = this.userModel.discriminators?.['COMPANY'];
+    if (!CompanyModel) throw new Error('Company discriminator not found');
+
+    await CompanyModel.create({
       email: dto.email,
       password: hashedPassword,
-      role: Role.COMPANY,
       companyName: dto.companyName,
       legalInfo: dto.legalInfo,
       description: dto.description,
       location: dto.location,
       emailVerificationToken: verificationToken,
       emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-    } as any);
+    });
 
     await this.emailService.sendVerificationEmail(dto.email, verificationToken);
 
@@ -61,17 +63,19 @@ export class AuthService {
     const hashedPassword = await HashingUtil.hash(dto.password);
     const verificationToken = HashingUtil.generateToken();
 
-    await this.userModel.create({
+    const DriverModel = this.userModel.discriminators?.['DRIVER'];
+    if (!DriverModel) throw new Error('Driver discriminator not found');
+
+    await DriverModel.create({
       email: dto.email,
       password: hashedPassword,
-      role: Role.DRIVER,
       fullName: dto.fullName,
       phone: dto.phone,
       licenseTypes: dto.licenseTypes || [],
       zone: dto.zone || [],
       emailVerificationToken: verificationToken,
       emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-    } as any);
+    });
 
     await this.emailService.sendVerificationEmail(dto.email, verificationToken);
 
