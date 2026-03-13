@@ -112,9 +112,10 @@ export class AuthService {
       expiresIn: this.configService.get('jwt.refreshExpiresIn') || '30d',
     });
 
-    user.refreshToken = await HashingUtil.hash(refreshToken);
-    user.refreshTokenExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-    await user.save();
+    await this.userModel.findByIdAndUpdate(user._id, {
+      refreshToken: await HashingUtil.hash(refreshToken),
+      refreshTokenExpires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    });
 
     return {
       access_token: accessToken,
