@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Body,
   Param,
   UseGuards,
@@ -35,5 +36,17 @@ export class ApplicationsController {
   @Roles(Role.COMPANY)
   findByMission(@Param('missionId') missionId: string) {
     return this.applicationsService.findByMission(missionId);
+  }
+
+  @Patch(':id/approve')
+  @Roles(Role.COMPANY)
+  approveApplication(@Param('id') id: string, @Request() req) {
+    return this.applicationsService.approve(id, req.user.sub);
+  }
+
+  @Patch(':id/reject')
+  @Roles(Role.COMPANY)
+  rejectApplication(@Param('id') id: string, @Request() req) {
+    return this.applicationsService.reject(id, req.user.sub);
   }
 }

@@ -50,4 +50,57 @@ export class ApplicationsService {
       .populate('driverId', 'fullName phone email licenseTypes')
       .sort({ createdAt: -1 });
   }
+  async approve(applicationId: string, companyId: string) {
+    const application = await this.applicationModel
+      .findById(applicationId)
+      .populate('missionId');
+    if (!application) throw new NotFoundException('Application not found');
+
+    const mission = application.missionId as any;
+    if (mission.companyId.toString() !== companyId.toString()) {
+      throw new BadRequestException(
+        'Not authorized to approve this application',
+      );
+    }
+
+    if (application.status !== ApplicationStatus.PENDING) {
+      throw new BadRequestException('Application is not pending');
+    }
+
+    application.status = ApplicationStatus.ACCEPTED;
+    await application.save();
+
+    await this.missionModel.findByIdAndUpdate(mission._id, {
+      assignedDriverId: application.driverId,
+      status: 'IN_PROGRESS',
+    });
+
+    await this.applicationModel.updateMany(
+      { missionId: mission._id, _id: { $ne: applicationId } },
+      { status: ApplicationStatus.REJECTED },
+    );
+
+    return application;
+  }
+
+  async reject(applicationId: string, companyId: string) {
+    const application = await this.applicationModel
+      .findById(applicationId)
+      .populate('missionId');
+    if (!application) throw new NotFoundException('Application not found');
+
+    const mission = application.missionId as any;
+    if (mission.companyId.toString() !== companyId.toString()) {
+      throw new BadRequestException(
+        'Not authorized to reject this application',
+      );
+    }
+
+    if (application.status !== ApplicationStatus.PENDING) {
+      throw new BadRequestException('Application is not pending');
+    }
+
+    application.status = ApplicationStatus.REJECTED;
+    return application.save();
+  }
 }
