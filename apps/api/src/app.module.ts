@@ -8,7 +8,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { MissionsModule } from './modules/missions/missions.module';
 import { ApplicationsModule } from './modules/applications/applications.module';
-
+import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,6 +25,7 @@ import { ApplicationsModule } from './modules/applications/applications.module';
     UsersModule,
     MissionsModule,
     ApplicationsModule,
+    SubscriptionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
