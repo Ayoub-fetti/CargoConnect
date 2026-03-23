@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
+import { SubscriptionGuard } from '../../common/guards/subscription.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../../database/schemas/user.schema';
 import { MissionsService } from './missions.service';
@@ -20,7 +21,7 @@ import { UpdateMissionDto } from './dto/update-mission.dto';
 import { MissionStatus } from './schemas/mission.schema';
 
 @Controller('missions')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard, SubscriptionGuard)
 export class MissionsController {
   constructor(private missionsService: MissionsService) {}
 
