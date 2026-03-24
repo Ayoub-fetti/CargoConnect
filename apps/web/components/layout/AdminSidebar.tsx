@@ -4,9 +4,8 @@ import { usePathname } from "next/navigation";
 
 const links = [
   { href: "/dashboard/admin", label: "Dashboard" },
-  { href: "/dashboard/admin/companies", label: "Companies" },
-  { href: "/dashboard/admin/drivers", label: "Drivers" },
-  { href: "/dashboard/admin/missions", label: "Missions" },
+  { href: "/dashboard/admin/users", label: "Users" },
+  { href: "/dashboard/admin/bills", label: "Bills" },
 ];
 
 export default function AdminSidebar() {
