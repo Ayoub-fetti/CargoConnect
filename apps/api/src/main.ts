@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as express from 'express';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -11,13 +12,12 @@ async function bootstrap() {
   });
   app.setGlobalPrefix('api');
 
-  // raw body for stripe webhook
+  app.use('/uploads', express.static(join(process.cwd(), 'uploads')));
+
   app.use(
     '/api/subscriptions/webhook',
     express.raw({ type: 'application/json' }),
   );
-
-  // json body for everything else
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 

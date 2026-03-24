@@ -22,22 +22,32 @@ export class SubscriptionGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     const user = req.user;
 
-    // only applies to COMPANY role
     if (!user || user.role !== Role.COMPANY) return true;
 
     const companyId = user.sub.toString();
-    const sub = await this.subModel.findOne({ companyId });
+    let sub = await this.subModel.findOne({ companyId });
+
+    // auto-create trial if no subscription exists
+    if (!sub) {
+      const trialEnd = new Date();
+      trialEnd.setMonth(trialEnd.getMonth() + 1);
+      sub = await this.subModel.create({
+        companyId,
+        trialEnd,
+        status: SubscriptionStatus.TRIAL,
+      });
+    }
+
     const now = new Date();
 
-    // auto-expire trial
-    if (sub?.status === SubscriptionStatus.TRIAL && now > sub.trialEnd) {
+    if (sub.status === SubscriptionStatus.TRIAL && now > sub.trialEnd) {
       sub.status = SubscriptionStatus.EXPIRED;
       await sub.save();
     }
 
     const isActive =
-      sub?.status === SubscriptionStatus.ACTIVE ||
-      (sub?.status === SubscriptionStatus.TRIAL && now <= sub.trialEnd);
+      sub.status === SubscriptionStatus.ACTIVE ||
+      (sub.status === SubscriptionStatus.TRIAL && now <= sub.trialEnd);
 
     if (!isActive) {
       throw new ForbiddenException(

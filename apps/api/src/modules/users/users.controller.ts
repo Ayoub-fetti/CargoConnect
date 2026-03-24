@@ -118,4 +118,15 @@ export class UsersController {
   deleteDocument(@Request() req, @Param('id') id: string) {
     return this.usersService.deleteDocument(req.user.sub, id);
   }
+  @Get('drivers/:id')
+  @Roles(Role.COMPANY, Role.ADMIN)
+  getDriverProfile(@Param('id') id: string) {
+    return this.usersService.getProfile(id);
+  }
+
+  @Get('drivers/:id/documents')
+  @Roles(Role.COMPANY, Role.ADMIN)
+  getDriverDocuments(@Param('id') id: string) {
+    return this.usersService.getDocuments(id);
+  }
 }

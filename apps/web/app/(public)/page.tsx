@@ -11,7 +11,7 @@ export default function Home() {
       </p>
       <div className="mt-10 flex justify-center gap-4">
         <Link
-          href="/login"
+          href="/register"
           className="rounded-md bg-blue-600 px-6 py-3 text-white hover:bg-blue-700"
         >
           Get Started

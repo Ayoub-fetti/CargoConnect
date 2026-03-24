@@ -7,10 +7,10 @@ export function useMissions() {
   const dispatch = useAppDispatch();
   const { missions, loading, error } = useAppSelector((s) => s.missions);
 
-  const fetchMissions = useCallback(async (status?: string) => {
+  const fetchMissions = useCallback(async () => {
     dispatch(setLoading(true));
     try {
-      const { data } = await missionService.getAll(status);
+      const { data } = await missionService.getMyMissions();
       dispatch(setMissions(data));
     } catch (e: any) {
       dispatch(setError(e.message));

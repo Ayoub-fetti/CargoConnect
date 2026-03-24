@@ -48,11 +48,23 @@ export class SubscriptionsService {
       await sub.save();
     }
 
+    // check stripe for cancel_at_period_end
+    let cancelAtPeriodEnd = false;
+    if (sub.stripeSubscriptionId) {
+      try {
+        const stripeSub = await this.stripe.subscriptions.retrieve(
+          sub.stripeSubscriptionId,
+        );
+        cancelAtPeriodEnd = stripeSub.cancel_at_period_end;
+      } catch {}
+    }
+
     return {
       status: sub.status,
       plan: sub.plan ?? null,
       trialEnd: sub.trialEnd,
       currentPeriodEnd: sub.currentPeriodEnd ?? null,
+      cancelAtPeriodEnd,
       isActive:
         [SubscriptionStatus.TRIAL, SubscriptionStatus.ACTIVE].includes(
           sub.status,
@@ -172,6 +184,25 @@ export class SubscriptionsService {
     }
 
     return { received: true };
+  }
+
+  async cancelSubscription(companyId: string) {
+    const sub = await this.subModel.findOne({ companyId });
+    if (!sub?.stripeSubscriptionId) {
+      throw new BadRequestException('No active subscription found');
+    }
+
+    await this.stripe.subscriptions.update(sub.stripeSubscriptionId, {
+      cancel_at_period_end: true,
+    });
+
+    // update DB immediately
+    sub.status = SubscriptionStatus.CANCELED;
+    await sub.save();
+
+    return {
+      message: 'Subscription will be cancelled at end of billing period.',
+    };
   }
 
   async listAllBills(page = 1, limit = 20) {

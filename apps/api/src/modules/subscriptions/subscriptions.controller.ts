@@ -53,4 +53,11 @@ export class SubscriptionsController {
   listBills(@Query('page') page = 1, @Query('limit') limit = 20) {
     return this.service.listAllBills(+page, +limit);
   }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.COMPANY)
+  @Post('cancel')
+  cancelSubscription(@Req() req: any) {
+    return this.service.cancelSubscription(req.user.sub.toString());
+  }
 }

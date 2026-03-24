@@ -23,4 +23,6 @@ export const companyService = {
   // Subscriptions
   getSubscriptionStatus: () => api.get('/subscriptions/status'),
   createCheckout: (data: { plan: string }) => api.post('/subscriptions/checkout', data),
+  cancelSubscription: () => api.post('/subscriptions/cancel'),
+
 };
