@@ -18,78 +18,110 @@ export default function DriverProfilePage() {
   if (!driver) return <p className="text-sm text-gray-400">Loading...</p>;
 
   return (
-    <div className="max-w-2xl">
-      <div className="flex items-center gap-4">
-        {driver.avatar ? (
-          <img
-            src={`${process.env.NEXT_PUBLIC_UPLOADS_URL}/${driver.avatar}`}
-            className="h-16 w-16 rounded-full object-cover"
-            alt=""
-          />
-        ) : (
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-2xl font-bold text-blue-600">
-            {driver.fullName?.[0]}
+    <div className="min-h-screen bg-white p-8 space-y-8 max-w-4xl">
+      {/* Header */}
+      <div className="border-b border-gray-100 pb-8 flex items-end justify-between">
+        <div className="flex items-center gap-5">
+          {/* Avatar */}
+          {driver.avatar ? (
+            <img
+              src={`${process.env.NEXT_PUBLIC_UPLOADS_URL}/${driver.avatar}`}
+              className="h-16 w-16 rounded-full object-cover"
+              alt=""
+            />
+          ) : (
+            <div className="h-16 w-16 flex items-center justify-center rounded-full bg-gray-100 text-black text-xl font-bold">
+              {driver.fullName?.[0]}
+            </div>
+          )}
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-gray-300 mb-1">
+              Conducteur
+            </p>
+            <h1 className="text-4xl font-black text-black tracking-tight">
+              {driver.fullName}
+            </h1>
+            <p className="text-xs text-gray-400 mt-1">
+              {driver.email} · {driver.phone}
+            </p>
+          </div>
+        </div>
+
+        {/* Availability */}
+        <span className="text-xs font-bold uppercase tracking-widest text-gray-400">
+          {driver.isAvailable ? "Disponible" : "Indisponible"}
+        </span>
+      </div>
+
+      {/* Info */}
+      <div className="rounded-2xl border border-gray-100 p-8 space-y-6">
+        <div className="grid grid-cols-2 gap-6 text-sm">
+          {/* Zones */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-gray-300 mb-1">
+              Zones
+            </p>
+            <p className="font-bold text-black">
+              {driver.zone?.join(", ") || "—"}
+            </p>
+          </div>
+
+          {/* Licenses */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-gray-300 mb-1">
+              Licences
+            </p>
+            <div className="flex gap-2 flex-wrap">
+              {driver.licenseTypes?.map((l: string) => (
+                <span
+                  key={l}
+                  className="text-[10px] font-bold uppercase tracking-widest text-gray-400"
+                >
+                  {l}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Documents */}
+      <div className="space-y-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-widest text-gray-300 mb-2">
+            Documents
+          </p>
+        </div>
+
+        {documents.length === 0 && (
+          <div className="py-16 text-center border border-gray-100 rounded-2xl">
+            <p className="text-sm text-gray-300 font-medium">
+              Aucun document disponible.
+            </p>
           </div>
         )}
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {driver.fullName}
-          </h1>
-          <p className="text-sm text-gray-500">
-            {driver.email} · {driver.phone}
-          </p>
-          <span
-            className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${driver.isAvailable ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}
-          >
-            {driver.isAvailable ? "Available" : "Unavailable"}
-          </span>
-        </div>
-      </div>
 
-      <div className="mt-6 rounded-xl border border-gray-100 bg-white p-5 space-y-3">
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-500">Zones</span>
-          <span className="font-medium text-gray-900">
-            {driver.zone?.join(", ") || "—"}
-          </span>
-        </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-500">License Types</span>
-          <div className="flex gap-1">
-            {driver.licenseTypes?.map((l: string) => (
-              <span
-                key={l}
-                className="rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-600"
-              >
-                {l}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-6">
-        <h2 className="text-lg font-semibold text-gray-900">Documents</h2>
-        <div className="mt-3 flex flex-col gap-2">
-          {documents.length === 0 && (
-            <p className="text-sm text-gray-400">No documents uploaded.</p>
-          )}
+        <div className="space-y-3">
           {documents.map((doc) => (
             <div
               key={doc._id}
-              className="flex items-center justify-between rounded-lg border border-gray-100 bg-white px-4 py-3"
+              className="group flex items-center justify-between rounded-2xl border border-gray-100 p-5 hover:border-black transition-colors duration-200"
             >
               <div>
-                <p className="text-sm font-medium text-gray-900">{doc.type}</p>
-                <p className="text-xs text-gray-400">{doc.originalName}</p>
+                <p className="font-bold text-black text-sm">{doc.type}</p>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  {doc.originalName}
+                </p>
               </div>
+
               <a
                 href={`${process.env.NEXT_PUBLIC_UPLOADS_URL}/${doc.path}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-md border border-gray-300 px-3 py-1 text-xs text-gray-700 hover:bg-gray-50"
+                className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-gray-400 hover:border-black hover:text-black transition-all duration-200"
               >
-                View
+                Voir →
               </a>
             </div>
           ))}

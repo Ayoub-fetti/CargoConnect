@@ -2,30 +2,34 @@ import Link from "next/link";
 
 export default function MobileOnlyPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-6 text-center">
-      <div className="rounded-2xl bg-white p-10 shadow-sm max-w-sm w-full">
-        <div className="text-6xl">📱</div>
-        <h1 className="mt-4 text-2xl font-bold text-gray-900">Use the Mobile App</h1>
-        <p className="mt-3 text-gray-500 text-sm">
-          The driver portal is only available on the CargoConnect mobile app.
-          Please download the app to continue.
+    <div className="flex min-h-screen flex-col items-center justify-center bg-white px-6 text-center">
+      <div className="max-w-sm w-full">
+        <div className="text-5xl mb-8">📱</div>
+        <h1 className="text-4xl font-black text-black leading-tight tracking-tight">
+          Application<br />requise.
+        </h1>
+        <p className="mt-5 text-sm text-gray-400 leading-relaxed">
+          L'espace chauffeur est uniquement disponible sur l'application mobile CargoConnect.
         </p>
-        <div className="mt-6 flex flex-col gap-3">
+        <div className="mt-10 flex flex-col gap-3">
           <a
             href="#"
-            className="rounded-md bg-black px-6 py-3 text-sm font-medium text-white hover:bg-gray-800"
+            className="rounded-full bg-black px-6 py-3 text-sm font-bold text-white hover:bg-gray-800 transition-all duration-200 hover:scale-105 active:scale-95"
           >
-            Download on App Store
+            Télécharger sur l'App Store
           </a>
           <a
             href="#"
-            className="rounded-md border border-gray-300 px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="rounded-full border border-gray-200 px-6 py-3 text-sm font-bold text-black hover:border-black transition-all duration-200 hover:scale-105 active:scale-95"
           >
-            Get it on Google Play
+            Disponible sur Google Play
           </a>
         </div>
-        <Link href="/login" className="mt-6 block text-sm text-blue-600 hover:underline">
-          ← Back to login
+        <Link
+          href="/login"
+          className="mt-10 inline-block text-xs font-semibold text-gray-400 uppercase tracking-widest hover:text-black transition-colors duration-200"
+        >
+          ← Retour à la connexion
         </Link>
       </div>
     </div>

@@ -5,33 +5,33 @@ import { companyService } from "../../../../services/company.service";
 const PLANS = [
   {
     key: "monthly",
-    label: "Monthly",
+    label: "Mensuel",
     price: "20 €",
-    period: "/month",
-    description: "Billed monthly, cancel anytime.",
+    period: "/mois",
+    description: "Facturation mensuelle, sans engagement.",
   },
   {
     key: "quarterly",
-    label: "Quarterly",
+    label: "Trimestriel",
     price: "50 €",
-    period: "/3 months",
-    description: "Save 16% vs monthly.",
+    period: "/3 mois",
+    description: "Économisez 16%.",
   },
   {
     key: "yearly",
-    label: "Yearly",
+    label: "Annuel",
     price: "200 €",
-    period: "/year",
-    description: "Best value, save 33%.",
+    period: "/an",
+    description: "Meilleur choix, économisez 33%.",
   },
 ];
 
-const statusColor: Record<string, string> = {
-  trial: "bg-blue-100 text-blue-700",
-  active: "bg-green-100 text-green-700",
-  expired: "bg-red-100 text-red-600",
-  past_due: "bg-yellow-100 text-yellow-700",
-  canceled: "bg-gray-100 text-gray-500",
+const statusLabel: Record<string, string> = {
+  trial: "Essai",
+  active: "Actif",
+  expired: "Expiré",
+  past_due: "Paiement en attente",
+  canceled: "Annulé",
 };
 
 export default function BillingPage() {
@@ -62,7 +62,7 @@ export default function BillingPage() {
   };
 
   const handleCancel = async () => {
-    if (!confirm("Cancel your subscription at end of billing period?")) return;
+    if (!confirm("Annuler votre abonnement à la fin de la période ?")) return;
     setCancelling(true);
     try {
       await companyService.cancelSubscription();
@@ -72,135 +72,159 @@ export default function BillingPage() {
     }
   };
 
-  if (loading) return <p className="text-sm text-gray-400">Loading...</p>;
+  if (loading) {
+    return (
+      <div className="flex items-center gap-3 text-sm text-gray-400 p-8">
+        <div
+          className="h-4 w-4 rounded-full border-2 border-gray-200 border-t-black"
+          style={{ animation: "spin 0.8s linear infinite" }}
+        />
+        Chargement...
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-3xl">
-      <h1 className="text-2xl font-bold text-gray-900">Billing</h1>
+    <div className="min-h-screen bg-white p-8 space-y-10 max-w-4xl">
 
-      {/* Current status */}
-      <div className="mt-6 rounded-xl border border-gray-100 bg-white p-6">
+      {/* Header */}
+      <div className="border-b border-gray-100 pb-8">
+        <p className="text-xs font-semibold uppercase tracking-widest text-gray-300 mb-1">
+          Entreprise
+        </p>
+        <h1 className="text-5xl font-black text-black tracking-tight">
+          Facturation
+        </h1>
+      </div>
+
+      {/* Status */}
+      <div className="rounded-2xl border border-gray-100 p-8 space-y-4">
+
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-500">Current Plan</p>
-            <p className="mt-1 text-lg font-semibold text-gray-900 capitalize">
-              {sub?.plan ?? "Free Trial"}
+            <p className="text-xs font-semibold uppercase tracking-widest text-gray-300">
+              Plan actuel
+            </p>
+            <p className="mt-2 text-xl font-black text-black capitalize">
+              {sub?.plan ?? "Essai gratuit"}
             </p>
           </div>
-          <span
-            className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${statusColor[sub?.status] ?? ""}`}
-          >
-            {sub?.status}
+
+          <span className="text-xs font-bold uppercase tracking-widest text-gray-400">
+            {statusLabel[sub?.status] ?? sub?.status}
           </span>
         </div>
 
+        {/* Messages */}
         {sub?.status === "trial" && sub?.trialEnd && (
-          <div className="mt-4 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-700">
-            🎉 Free trial active — expires on{" "}
-            <span className="font-medium">
+          <p className="text-sm text-gray-600">
+            Essai actif jusqu’au{" "}
+            <span className="font-bold text-black">
               {new Date(sub.trialEnd).toLocaleDateString()}
             </span>
-          </div>
+          </p>
         )}
 
         {sub?.status === "expired" && (
-          <div className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
-            ⚠️ Your trial has expired. Choose a plan below to continue creating
-            missions.
-          </div>
+          <p className="text-sm text-gray-600">
+            Votre essai est terminé. Choisissez une offre pour continuer.
+          </p>
         )}
 
-        {sub?.status === "active" && (
-          <div className="mt-4 space-y-3">
-            {sub?.currentPeriodEnd && (
-              <div
-                className={`rounded-lg px-4 py-3 text-sm ${sub.cancelAtPeriodEnd ? "bg-yellow-50 text-yellow-700" : "bg-green-50 text-green-700"}`}
-              >
-                {sub.cancelAtPeriodEnd
-                  ? "⚠️ Subscription cancels on "
-                  : "✅ Next billing date: "}
-                <span className="font-medium">
-                  {new Date(sub.currentPeriodEnd).toLocaleDateString()}
-                </span>
-              </div>
-            )}
-            {!sub.cancelAtPeriodEnd && (
-              <>
-                <button
-                  onClick={handleCancel}
-                  disabled={cancelling}
-                  className="rounded-md border border-red-200 px-4 py-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50"
-                >
-                  {cancelling ? "Cancelling..." : "Cancel Subscription"}
-                </button>
-                <p className="text-xs text-gray-400">
-                  Your subscription will remain active until the end of the
-                  current billing period.
-                </p>
-              </>
-            )}
-          </div>
+        {sub?.status === "active" && sub?.currentPeriodEnd && (
+          <p className="text-sm text-gray-600">
+            {sub.cancelAtPeriodEnd
+              ? "Fin prévue le "
+              : "Prochaine facturation le "}
+            <span className="font-bold text-black">
+              {new Date(sub.currentPeriodEnd).toLocaleDateString()}
+            </span>
+          </p>
         )}
 
-        {sub?.status === "canceled" && (
-          <div className="mt-4 rounded-lg bg-gray-50 px-4 py-3 text-sm text-gray-600">
-            ℹ️ Your subscription has been cancelled. Choose a plan below to
-            resubscribe.
-          </div>
-        )}
-
-        {sub?.status === "past_due" && (
-          <div className="mt-4 rounded-lg bg-yellow-50 px-4 py-3 text-sm text-yellow-700">
-            ⚠️ Payment failed. Please update your payment method via the plan
-            below.
-          </div>
+        {sub?.status === "active" && !sub.cancelAtPeriodEnd && (
+          <button
+            onClick={handleCancel}
+            disabled={cancelling}
+            className="rounded-full border border-gray-200 px-5 py-2 text-xs font-bold uppercase tracking-widest text-gray-400 hover:border-black hover:text-black transition-all duration-200"
+          >
+            {cancelling ? "Annulation..." : "Annuler l’abonnement"}
+          </button>
         )}
       </div>
 
-      {/* Plans — show when not active */}
+      {/* Plans */}
       {sub?.status !== "active" && (
-        <div className="mt-8">
-          <h2 className="text-lg font-semibold text-gray-900">Choose a Plan</h2>
-          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="space-y-6">
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-gray-300 mb-1">
+              Abonnement
+            </p>
+            <h2 className="text-2xl font-black text-black">
+              Choisir une offre
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
             {PLANS.map((plan) => (
               <div
                 key={plan.key}
-                className={`flex flex-col justify-between rounded-xl border p-5 ${
-                  plan.key === "yearly"
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-200 bg-white"
+                className={`flex flex-col justify-between rounded-2xl border p-6 transition-all duration-200 hover:border-black ${
+                  sub?.plan === plan.key
+                    ? "border-black"
+                    : "border-gray-100"
                 }`}
               >
                 <div>
-                  <p className="font-semibold text-gray-900">{plan.label}</p>
-                  <p className="mt-1 text-2xl font-bold text-gray-900">
-                    {plan.price}
-                    <span className="text-sm font-normal text-gray-500">
-                      {plan.period}
-                    </span>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-gray-300">
+                    {plan.label}
                   </p>
-                  <p className="mt-2 text-xs text-gray-500">
+
+                  <p className="mt-3 text-3xl font-black text-black">
+                    {plan.price}
+                  </p>
+
+                  <p className="text-xs text-gray-400 mt-1">
+                    {plan.period}
+                  </p>
+
+                  <p className="text-xs text-gray-400 mt-3">
                     {plan.description}
                   </p>
+
+                  {/* Badge plan actuel */}
+                  {sub?.plan === plan.key && (
+                    <p className="mt-2 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                      Actuel
+                    </p>
+                  )}
                 </div>
+
                 <button
                   onClick={() => handleCheckout(plan.key)}
                   disabled={checkoutLoading === plan.key}
-                  className={`mt-4 rounded-md py-2 text-sm font-medium transition-colors disabled:opacity-50 ${
-                    plan.key === "yearly"
-                      ? "bg-blue-600 text-white hover:bg-blue-700"
-                      : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                  className={`mt-6 rounded-full px-6 py-2.5 text-xs font-bold uppercase tracking-widest transition-all duration-200 ${
+                    sub?.plan === plan.key
+                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                      : "border border-gray-200 text-gray-400 hover:border-black hover:text-black"
                   }`}
                 >
                   {checkoutLoading === plan.key
-                    ? "Redirecting..."
-                    : `Get ${plan.label}`}
+                    ? "Redirection..."
+                    : "Choisir →"}
                 </button>
               </div>
             ))}
+
           </div>
         </div>
       )}
+
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+      `}</style>
     </div>
   );
 }

@@ -31,59 +31,136 @@ export default function ApplicationsPage() {
 
   if (loading) return <p className="text-sm text-gray-400">Loading...</p>;
 
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900">Applications</h1>
-      <div className="mt-6 flex flex-col gap-3">
-        {applications.length === 0 && <p className="text-sm text-gray-400">No applications yet.</p>}
+return (
+  <div className="min-h-screen bg-white p-8 space-y-8 max-w-4xl">
+
+    {/* Header */}
+    <div className="border-b border-gray-100 pb-8 flex items-end justify-between">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-widest text-gray-300 mb-1">
+          Mission
+        </p>
+        <h1 className="text-5xl font-black text-black tracking-tight">
+          Candidatures
+        </h1>
+      </div>
+
+      <Link
+        href={`/dashboard/company/missions/${id}`}
+        className="rounded-full border border-gray-200 px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-gray-400 hover:border-black hover:text-black transition-all duration-200"
+      >
+        ← Retour
+      </Link>
+    </div>
+
+    {/* Loading */}
+    {loading ? (
+      <div className="flex items-center gap-3 text-sm text-gray-400">
+        <div
+          className="h-4 w-4 rounded-full border-2 border-gray-200 border-t-black"
+          style={{ animation: "spin 0.8s linear infinite" }}
+        />
+        Chargement...
+      </div>
+    ) : (
+      <div className="space-y-3">
+
+        {applications.length === 0 && (
+          <div className="py-20 text-center border border-gray-100 rounded-2xl">
+            <p className="text-sm text-gray-300 font-medium">
+              Aucune candidature pour le moment.
+            </p>
+          </div>
+        )}
+
         {applications.map((app) => {
           const driver = app.driverId;
+
           return (
-            <div key={app._id} className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600 font-bold">
-                    {driver?.fullName?.[0] ?? "D"}
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900">{driver?.fullName}</p>
-                    <p className="text-sm text-gray-500">{driver?.email}</p>
-                    <div className="mt-1 flex gap-1">
-                      {driver?.licenseTypes?.map((l: string) => (
-                        <span key={l} className="rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-600">{l}</span>
-                      ))}
-                    </div>
-                  </div>
+            <div
+              key={app._id}
+              className="group flex items-center justify-between rounded-2xl border border-gray-100 p-5 hover:border-black transition-colors duration-200"
+            >
+              {/* Left */}
+              <div className="flex items-center gap-5">
+
+                {/* Avatar */}
+                <div className="h-10 w-10 flex items-center justify-center rounded-full bg-gray-100 text-black font-bold text-sm">
+                  {driver?.fullName?.[0] ?? "D"}
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColor[app.status]}`}>
-                    {app.status}
-                  </span>
-                  <Link
-                    href={`/dashboard/company/drivers/${driver?._id}`}
-                    className="rounded-md border border-gray-300 px-3 py-1 text-xs text-gray-700 hover:bg-gray-50"
-                  >
-                    View Profile
-                  </Link>
-                  {app.status === "PENDING" && (
-                    <>
-                      <button onClick={() => handle(app._id, "approve")} className="rounded-md bg-green-600 px-3 py-1 text-xs text-white hover:bg-green-700">
-                        Approve
-                      </button>
-                      <button onClick={() => handle(app._id, "reject")} className="rounded-md bg-red-50 px-3 py-1 text-xs text-red-600 hover:bg-red-100">
-                        Reject
-                      </button>
-                    </>
-                  )}
+
+                <div>
+                  <p className="font-bold text-black text-sm">
+                    {driver?.fullName}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    {driver?.email}
+                  </p>
+
+                  {/* Licenses */}
+                  <div className="flex gap-2 mt-1">
+                    {driver?.licenseTypes?.map((l: string) => (
+                      <span
+                        key={l}
+                        className="text-[10px] font-bold uppercase tracking-widest text-gray-400"
+                      >
+                        {l}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
+
+              {/* Right */}
+              <div className="flex items-center gap-4">
+
+                {/* Status */}
+                <span className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                  {app.status}
+                </span>
+
+                {/* Actions */}
+                <Link
+                  href={`/dashboard/company/drivers/${driver?._id}`}
+                  className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-gray-400 hover:border-black hover:text-black transition-all duration-200"
+                >
+                  Profil →
+                </Link>
+
+                {app.status === "PENDING" && (
+                  <>
+                    <button
+                      onClick={() => handle(app._id, "approve")}
+                      className="rounded-full bg-black px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white hover:bg-gray-900 transition-all duration-200"
+                    >
+                      Accepter
+                    </button>
+
+                    <button
+                      onClick={() => handle(app._id, "reject")}
+                      className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-gray-400 hover:border-black hover:text-black transition-all duration-200"
+                    >
+                      Refuser
+                    </button>
+                  </>
+                )}
+              </div>
+
+              {/* Message */}
               {app.message && (
-                <p className="mt-3 rounded-md bg-gray-50 px-3 py-2 text-sm text-gray-600">"{app.message}"</p>
+                <div className="absolute left-0 top-full mt-2 w-full rounded-xl border border-gray-100 bg-white p-4 text-sm text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-sm">
+                  “{app.message}”
+                </div>
               )}
             </div>
           );
         })}
       </div>
-    </div>
-  );
+    )}
+
+    <style>{`
+      @keyframes spin { to { transform: rotate(360deg); } }
+    `}</style>
+  </div>
+);
 }

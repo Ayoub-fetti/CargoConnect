@@ -2,26 +2,49 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-24 text-center">
-      <h1 className="text-5xl font-bold text-gray-900">
-        Connect Cargo, <span className="text-blue-600">Seamlessly</span>
-      </h1>
-      <p className="mx-auto mt-6 max-w-xl text-lg text-gray-500">
-        CargoConnect links companies with drivers for efficient freight management.
-      </p>
-      <div className="mt-10 flex justify-center gap-4">
-        <Link
-          href="/register"
-          className="rounded-md bg-blue-600 px-6 py-3 text-white hover:bg-blue-700"
-        >
-          Get Started
-        </Link>
-        <Link
-          href="/about"
-          className="rounded-md border border-gray-300 px-6 py-3 text-gray-700 hover:bg-gray-50"
-        >
-          Learn More
-        </Link>
+    <section className="relative flex min-h-[100vh] items-center justify-center overflow-hidden">
+
+      {/* Background image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: "url('/man-truck.webp')",
+          filter: "brightness(0.25)",
+        }}
+      />
+
+      {/* Content */}
+      <div className="relative z-10 px-6 text-center max-w-2xl w-full mx-auto">
+
+        <h1 className="text-6xl sm:text-7xl font-black text-white leading-tight tracking-tight">
+          Le fret,<br />sans friction.
+        </h1>
+
+        <p className="mt-6 text-white/80 text-lg">
+          Vous êtes chauffeur ou entreprise ? Choisissez votre expérience.
+        </p>
+
+        {/* Buttons */}
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+
+          {/* Company */}
+          <Link
+            href="/register"
+            className="w-full sm:w-auto rounded-full bg-white px-8 py-3  font-bold text-black hover:bg-gray-100 transition-all duration-200 hover:scale-105 active:scale-95"
+          >
+            Je suis une entreprise
+          </Link>
+
+          {/* Driver */}
+          <Link
+            href="/mobile-only"
+            className="w-full sm:w-auto rounded-full border border-white/40 px-8 py-3  font-bold text-white hover:border-white transition-all duration-200 hover:scale-105 active:scale-95"
+          >
+            Je suis chauffeur
+          </Link>
+
+        </div>
+
       </div>
     </section>
   );

@@ -1,23 +1,52 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
+  const pathname = usePathname();
+
+  const linkClass = (path) =>
+    `relative transition-colors duration-200
+     ${pathname === path ? "text-black font-semibold" : "text-gray-500 hover:text-black"}
+     after:absolute after:bottom-[-2px] after:left-0 after:h-[1.5px]
+     after:bg-black after:content-[''] after:transition-all after:duration-300
+     ${pathname === path ? "after:w-full" : "after:w-0 hover:after:w-full"}`;
+
   return (
-    <header className="w-full border-b border-gray-200 bg-white px-6 py-4">
+    <header className="w-full bg-white px-8 py-5 border-b border-gray-100">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
-        <Link href="/" className="text-xl font-bold text-blue-600">
+
+        {/* Logo */}
+        <Link
+          href="/"
+          className="text-lg font-black tracking-tight text-black uppercase"
+          style={{ letterSpacing: "0.05em" }}
+        >
           CargoConnect
         </Link>
-        <nav className="flex gap-6 text-sm font-medium text-gray-600">
-          <Link href="/" className="hover:text-blue-600">Home</Link>
-          <Link href="/about" className="hover:text-blue-600">About</Link>
-          <Link href="/contact" className="hover:text-blue-600">Contact</Link>
+
+        {/* Navigation */}
+        <nav className="hidden md:flex items-center gap-10 text-sm font-medium">
+          <Link href="/" className={linkClass("/")}>
+            Accueil
+          </Link>
+          <Link href="/about" className={linkClass("/about")}>
+            À propos
+          </Link>
+          <Link href="/contact" className={linkClass("/contact")}>
+            Contact
+          </Link>
         </nav>
+
+        {/* CTA */}
         <Link
           href="/login"
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+          className="rounded-full bg-black px-6 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-gray-800 hover:shadow-lg hover:scale-105 active:scale-95"
         >
-          Login
+          Connexion
         </Link>
+
       </div>
     </header>
   );
