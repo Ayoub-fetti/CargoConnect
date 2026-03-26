@@ -40,7 +40,13 @@ export class ApplicationsService {
   async findByDriver(driverId: string) {
     return this.applicationModel
       .find({ driverId })
-      .populate('missionId')
+      .populate({
+        path: 'missionId',
+        populate: {
+          path: 'companyId',
+          select: 'companyName email location description legalInfo logo',
+        },
+      })
       .sort({ createdAt: -1 });
   }
 

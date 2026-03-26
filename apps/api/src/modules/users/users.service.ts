@@ -8,6 +8,13 @@ import { Model } from 'mongoose';
 import { User, Role } from '../../database/schemas/user.schema';
 import { DocumentsService } from '../documents/documents.service';
 import * as fs from 'fs/promises';
+import { isAbsolute, join } from 'path';
+
+const API_ROOT = join(__dirname, '..', '..', '..');
+
+function resolveStoredPath(path: string) {
+  return isAbsolute(path) ? path : join(API_ROOT, path);
+}
 
 @Injectable()
 export class UsersService {
@@ -39,7 +46,7 @@ export class UsersService {
       throw new BadRequestException('Only drivers can upload avatars');
 
     if ((user as any).avatar) {
-      await fs.unlink((user as any).avatar).catch(() => {});
+      await fs.unlink(resolveStoredPath((user as any).avatar)).catch(() => {});
     }
 
     (user as any).avatar = path;
@@ -53,7 +60,7 @@ export class UsersService {
       throw new BadRequestException('Invalid user');
 
     if ((user as any).logo) {
-      await fs.unlink((user as any).logo).catch(() => {});
+      await fs.unlink(resolveStoredPath((user as any).logo)).catch(() => {});
     }
 
     (user as any).logo = path;
@@ -65,8 +72,9 @@ export class UsersService {
     userId: string,
     file: Express.Multer.File,
     type: string,
+    storedPath: string,
   ) {
-    return this.documentsService.uploadDocument(userId, file, type);
+    return this.documentsService.uploadDocument(userId, file, type, storedPath);
   }
 
   async getDocuments(userId: string) {

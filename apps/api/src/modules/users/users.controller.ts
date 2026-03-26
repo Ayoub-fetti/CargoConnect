@@ -10,6 +10,7 @@ import {
   UploadedFile,
   Delete,
   Param,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -20,7 +21,21 @@ import { UsersService } from './users.service';
 import { UpdateDriverProfileDto } from './dto/update-driver-profile.dto';
 import { UpdateCompanyProfileDto } from './dto/update-company-profile.dto';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { extname, join } from 'path';
+import { mkdirSync } from 'fs';
+
+const API_ROOT = join(__dirname, '..', '..', '..');
+const UPLOADS_ROOT = join(API_ROOT, 'uploads');
+
+function getUploadDestination(folder: string) {
+  const destination = join(UPLOADS_ROOT, folder);
+  mkdirSync(destination, { recursive: true });
+  return destination;
+}
+
+function toStoredUploadPath(folder: string, filename: string) {
+  return join('uploads', folder, filename).replace(/\\/g, '/');
+}
 
 @Controller('profiles')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -45,7 +60,9 @@ export class UsersController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './uploads/avatars',
+        destination: (req, file, cb) => {
+          cb(null, getUploadDestination('avatars'));
+        },
         filename: (req, file, cb) => {
           const uniqueSuffix =
             Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -55,14 +72,21 @@ export class UsersController {
       limits: { fileSize: 5 * 1024 * 1024 },
       fileFilter: (req, file, cb) => {
         if (!file.mimetype.match(/\/(jpg|jpeg|png)$/)) {
-          return cb(new Error('Only images allowed'), false);
+          return cb(new BadRequestException('Only images allowed') as any, false);
         }
         cb(null, true);
       },
     }),
   )
   uploadAvatar(@Request() req, @UploadedFile() file: Express.Multer.File) {
-    return this.usersService.updateAvatar(req.user.sub, file.path);
+    if (!file) {
+      throw new BadRequestException('Avatar file is required');
+    }
+
+    return this.usersService.updateAvatar(
+      req.user.sub,
+      toStoredUploadPath('avatars', file.filename),
+    );
   }
 
   @Post('logo')
@@ -70,7 +94,9 @@ export class UsersController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './uploads/logos',
+        destination: (req, file, cb) => {
+          cb(null, getUploadDestination('logos'));
+        },
         filename: (req, file, cb) => {
           const uniqueSuffix =
             Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -81,7 +107,14 @@ export class UsersController {
     }),
   )
   uploadLogo(@Request() req, @UploadedFile() file: Express.Multer.File) {
-    return this.usersService.updateLogo(req.user.sub, file.path);
+    if (!file) {
+      throw new BadRequestException('Logo file is required');
+    }
+
+    return this.usersService.updateLogo(
+      req.user.sub,
+      toStoredUploadPath('logos', file.filename),
+    );
   }
 
   @Post('documents')
@@ -89,7 +122,9 @@ export class UsersController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './uploads/documents',
+        destination: (req, file, cb) => {
+          cb(null, getUploadDestination('documents'));
+        },
         filename: (req, file, cb) => {
           const uniqueSuffix =
             Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -104,7 +139,16 @@ export class UsersController {
     @UploadedFile() file: Express.Multer.File,
     @Body('type') type: string,
   ) {
-    return this.usersService.uploadDocument(req.user.sub, file, type);
+    if (!file) {
+      throw new BadRequestException('Document file is required');
+    }
+
+    return this.usersService.uploadDocument(
+      req.user.sub,
+      file,
+      type,
+      toStoredUploadPath('documents', file.filename),
+    );
   }
 
   @Get('documents')

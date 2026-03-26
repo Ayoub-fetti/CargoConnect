@@ -121,7 +121,12 @@ export default function ProfileScreen() {
 		try {
 			const name = asset.fileName || 'avatar.jpg';
 			const mime = asset.mimeType || 'image/jpeg';
-			await driverService.uploadAvatar(asset.uri, name, mime);
+			await driverService.uploadAvatar({
+				fileUri: asset.uri,
+				fileName: name,
+				mimeType: mime,
+				webFile: (asset as any).file,
+			});
 			Alert.alert('Success', 'Avatar uploaded.');
 			await loadData();
 		} catch {
@@ -147,6 +152,7 @@ export default function ProfileScreen() {
 				fileUri: asset.uri,
 				fileName: asset.name,
 				mimeType: asset.mimeType || 'application/octet-stream',
+				webFile: (asset as any).file,
 				type: documentType,
 			});
 			Alert.alert('Success', 'Document uploaded.');

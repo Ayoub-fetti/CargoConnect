@@ -12,7 +12,7 @@ async function bootstrap() {
   });
   app.setGlobalPrefix('api');
 
-  app.use('/uploads', express.static(join(process.cwd(), 'uploads')));
+  app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   app.use(
     '/api/subscriptions/webhook',

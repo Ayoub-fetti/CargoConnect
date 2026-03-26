@@ -3,16 +3,144 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import api from "../../../../../lib/axios";
 
+type DriverProfile = {
+  fullName?: string;
+  email?: string;
+  phone?: string;
+  avatar?: string;
+  isAvailable?: boolean;
+  zone?: string[];
+  licenseTypes?: string[];
+};
+
+type DriverDocument = {
+  _id: string;
+  type?: string;
+  originalName?: string;
+  path?: string;
+};
+
+function extractDocumentsPayload(data: unknown): DriverDocument[] {
+  if (Array.isArray(data)) return data as DriverDocument[];
+
+  if (data && typeof data === "object") {
+    const record = data as Record<string, unknown>;
+
+    if (Array.isArray(record.documents)) {
+      return record.documents as DriverDocument[];
+    }
+
+    if (Array.isArray(record.data)) {
+      return record.data as DriverDocument[];
+    }
+
+    const firstArray = Object.values(record).find((value) => Array.isArray(value));
+    if (Array.isArray(firstArray)) {
+      return firstArray as DriverDocument[];
+    }
+  }
+
+  return [];
+}
+
+function getUploadsBaseUrl() {
+  const env = process.env.NEXT_PUBLIC_UPLOADS_URL;
+  if (env) return env.replace(/\/+$/, "");
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api";
+  return apiUrl.replace(/\/api\/?$/, "");
+}
+
+function buildUploadUrl(path?: string) {
+  if (!path) return "";
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+
+  const normalized = path.replace(/\\/g, "/");
+  const uploadsBase = getUploadsBaseUrl();
+  const baseHasUploadsSuffix = /\/uploads$/i.test(uploadsBase);
+
+  let relativePath = normalized.replace(/^\/+/, "");
+
+  if (normalized.startsWith("uploads/")) {
+    relativePath = normalized;
+  }
+
+  const marker = "/uploads/";
+  const markerIndex = normalized.indexOf(marker);
+  if (markerIndex >= 0) {
+    relativePath = `uploads/${normalized.slice(markerIndex + marker.length)}`;
+  }
+
+  if (!relativePath.startsWith("uploads/")) {
+    relativePath = `uploads/${relativePath}`;
+  }
+
+  if (baseHasUploadsSuffix && relativePath.startsWith("uploads/")) {
+    relativePath = relativePath.slice("uploads/".length);
+  }
+
+  return `${uploadsBase}/${relativePath}`;
+}
+
 export default function DriverProfilePage() {
-  const { id } = useParams<{ id: string }>();
-  const [driver, setDriver] = useState<any>(null);
-  const [documents, setDocuments] = useState<any[]>([]);
+  const params = useParams<{ id: string | string[] }>();
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
+  const [driver, setDriver] = useState<DriverProfile | null>(null);
+  const [documents, setDocuments] = useState<DriverDocument[]>([]);
+  const [documentsError, setDocumentsError] = useState<string | null>(null);
+  const [documentsDebug, setDocumentsDebug] = useState<string>("");
 
   useEffect(() => {
+    if (!id) return;
+
     api.get(`/profiles/drivers/${id}`).then(({ data }) => setDriver(data));
     api
       .get(`/profiles/drivers/${id}/documents`)
-      .then(({ data }) => setDocuments(data));
+      .then((response) => {
+        const normalized = extractDocumentsPayload(response.data);
+
+        setDocuments(normalized);
+        setDocumentsError(null);
+
+        setDocumentsDebug(
+          JSON.stringify(
+            {
+              ok: true,
+              requestUrl: `/profiles/drivers/${id}/documents`,
+              status: response.status,
+              count: normalized.length,
+              rawType: Array.isArray(response.data)
+                ? "array"
+                : response.data === null
+                  ? "null"
+                  : typeof response.data,
+              rawData: response.data,
+            },
+            null,
+            2,
+          ),
+        );
+      })
+      .catch((error) => {
+        setDocuments([]);
+        const message =
+          error?.response?.data?.message || error?.message || "Failed to load documents";
+        setDocumentsError(String(message));
+
+        setDocumentsDebug(
+          JSON.stringify(
+            {
+              ok: false,
+              requestUrl: `/profiles/drivers/${id}/documents`,
+              status: error?.response?.status,
+              message,
+              rawErrorData: error?.response?.data,
+            },
+            null,
+            2,
+          ),
+        );
+      });
   }, [id]);
 
   if (!driver) return <p className="text-sm text-gray-400">Loading...</p>;
@@ -25,7 +153,7 @@ export default function DriverProfilePage() {
           {/* Avatar */}
           {driver.avatar ? (
             <img
-              src={`${process.env.NEXT_PUBLIC_UPLOADS_URL}/${driver.avatar}`}
+              src={buildUploadUrl(driver.avatar)}
               className="h-16 w-16 rounded-full object-cover"
               alt=""
             />
@@ -99,6 +227,9 @@ export default function DriverProfilePage() {
             <p className="text-sm text-gray-300 font-medium">
               Aucun document disponible.
             </p>
+            {documentsError ? (
+              <p className="text-xs text-red-500 mt-3">Erreur: {documentsError}</p>
+            ) : null}
           </div>
         )}
 
@@ -116,7 +247,7 @@ export default function DriverProfilePage() {
               </div>
 
               <a
-                href={`${process.env.NEXT_PUBLIC_UPLOADS_URL}/${doc.path}`}
+                href={buildUploadUrl(doc.path)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-gray-400 hover:border-black hover:text-black transition-all duration-200"
@@ -126,6 +257,15 @@ export default function DriverProfilePage() {
             </div>
           ))}
         </div>
+
+        <details className="rounded-xl border border-yellow-200 bg-yellow-50 p-4">
+          <summary className="cursor-pointer text-xs font-semibold uppercase tracking-widest text-yellow-700">
+            Debug documents response
+          </summary>
+          <pre className="mt-3 overflow-x-auto text-xs text-yellow-900 whitespace-pre-wrap">
+            {documentsDebug || "No debug data yet"}
+          </pre>
+        </details>
       </div>
     </div>
   );

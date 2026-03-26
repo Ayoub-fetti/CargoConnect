@@ -13,6 +13,39 @@ export interface UpdateDriverProfileDto {
   zone?: string[];
 }
 
+type UploadFileInput = {
+  fileUri: string;
+  fileName?: string;
+  mimeType?: string;
+  webFile?: unknown;
+};
+
+function appendUploadFile(form: FormData, input: UploadFileInput) {
+  // Expo web needs a real File/Blob in FormData, while native uses { uri, name, type }.
+  if (input.webFile instanceof Blob) {
+    if (typeof File !== 'undefined' && input.webFile instanceof File) {
+      form.append('file', input.webFile);
+      return;
+    }
+
+    if (typeof File !== 'undefined') {
+      const fileFromBlob = new File(
+        [input.webFile],
+        input.fileName || 'upload.bin',
+        { type: input.mimeType || input.webFile.type || 'application/octet-stream' },
+      );
+      form.append('file', fileFromBlob);
+      return;
+    }
+  }
+
+  form.append('file', {
+    uri: input.fileUri,
+    name: input.fileName || 'upload.bin',
+    type: input.mimeType || 'application/octet-stream',
+  } as any);
+}
+
 export const driverService = {
   async applyForMission(payload: CreateApplicationDto) {
     const { data } = await api.post('/applications', payload);
@@ -34,13 +67,9 @@ export const driverService = {
     return data;
   },
 
-  async uploadAvatar(fileUri: string, fileName = 'avatar.jpg', mimeType = 'image/jpeg') {
+  async uploadAvatar(params: UploadFileInput) {
     const form = new FormData();
-    form.append('file', {
-      uri: fileUri,
-      name: fileName,
-      type: mimeType,
-    } as any);
+    appendUploadFile(form, params);
 
     const { data } = await api.post('/profiles/avatar', form, {
       headers: { 'Content-Type': 'multipart/form-data' },
@@ -48,18 +77,9 @@ export const driverService = {
     return data;
   },
 
-  async uploadDocument(params: {
-    fileUri: string;
-    type: string;
-    fileName?: string;
-    mimeType?: string;
-  }) {
+  async uploadDocument(params: UploadFileInput & { type: string }) {
     const form = new FormData();
-    form.append('file', {
-      uri: params.fileUri,
-      name: params.fileName || 'document.pdf',
-      type: params.mimeType || 'application/pdf',
-    } as any);
+    appendUploadFile(form, params);
     form.append('type', params.type);
 
     const { data } = await api.post('/profiles/documents', form, {

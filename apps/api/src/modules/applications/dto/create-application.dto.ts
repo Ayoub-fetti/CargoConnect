@@ -1,10 +1,10 @@
-import { IsString, IsOptional, IsMongoId } from 'class-validator';
+import { IsString, IsMongoId, MinLength } from 'class-validator';
 
 export class CreateApplicationDto {
   @IsMongoId()
   missionId: string;
 
   @IsString()
-  @IsOptional()
-  message?: string;
+  @MinLength(10)
+  message: string;
 }

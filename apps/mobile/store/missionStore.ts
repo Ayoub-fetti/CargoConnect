@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { AxiosError } from 'axios';
 import { driverService } from '@/services/driver.service';
 import { missionService, Mission, MissionStatus } from '@/services/misiion.service';
 
@@ -30,8 +31,32 @@ export const fetchMissionById = createAsyncThunk(
 
 export const applyForMission = createAsyncThunk(
   'missions/apply',
-  async (payload: { missionId: string; message?: string }) =>
-    driverService.applyForMission(payload)
+  async (
+    payload: { missionId: string; message?: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      return await driverService.applyForMission(payload);
+    } catch (error) {
+      const axiosError = error as AxiosError<{
+        message?: string | string[] | { message?: string | string[] };
+      }>;
+
+      const rawMessage = axiosError.response?.data?.message;
+      const message =
+        typeof rawMessage === 'string'
+          ? rawMessage
+          : Array.isArray(rawMessage)
+            ? rawMessage.join(', ')
+            : typeof rawMessage?.message === 'string'
+              ? rawMessage.message
+              : Array.isArray(rawMessage?.message)
+                ? rawMessage.message.join(', ')
+                : axiosError.message;
+
+      return rejectWithValue(message || 'Failed to apply for mission');
+    }
+  },
 );
 
 export const fetchMyApplications = createAsyncThunk(
