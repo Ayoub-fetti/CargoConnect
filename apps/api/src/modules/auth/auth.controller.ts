@@ -36,7 +36,7 @@ export class AuthController {
   @Post('logout')
   @UseGuards(AuthGuard('jwt'))
   logout(@Req() req) {
-    return this.authService.logout(req.user.userId);
+    return this.authService.logout(req.user.sub);
   }
 
   @Post('verify-email')
