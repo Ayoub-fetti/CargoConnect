@@ -50,7 +50,8 @@ describe('AuthController', () => {
 
   it('should logout', async () => {
     mockAuthService.logout.mockResolvedValue({ message: 'Logged out successfully' });
-    const result = await controller.logout({ user: { userId: 'uid' } });
+    const result = await controller.logout({ user: { sub: 'uid' } } as any);
+    expect(mockAuthService.logout).toHaveBeenCalledWith('uid');
     expect(result).toEqual({ message: 'Logged out successfully' });
   });
 
