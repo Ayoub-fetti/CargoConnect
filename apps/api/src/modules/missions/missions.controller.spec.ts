@@ -22,9 +22,12 @@ describe('MissionsController', () => {
       controllers: [MissionsController],
       providers: [{ provide: MissionsService, useValue: mockMissionsService }],
     })
-      .overrideGuard(JwtAuthGuard).useValue({ canActivate: () => true })
-      .overrideGuard(RolesGuard).useValue({ canActivate: () => true })
-      .overrideGuard(SubscriptionGuard).useValue({ canActivate: () => true })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(RolesGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(SubscriptionGuard)
+      .useValue({ canActivate: () => true })
       .compile();
     controller = module.get<MissionsController>(MissionsController);
   });
@@ -34,7 +37,9 @@ describe('MissionsController', () => {
   it('should create a mission', async () => {
     mockMissionsService.create.mockResolvedValue({ _id: '1' });
     const result = await controller.create(req, { title: 'Test' } as any);
-    expect(mockMissionsService.create).toHaveBeenCalledWith('company-id', { title: 'Test' });
+    expect(mockMissionsService.create).toHaveBeenCalledWith('company-id', {
+      title: 'Test',
+    });
     expect(result).toEqual({ _id: '1' });
   });
 
@@ -47,7 +52,9 @@ describe('MissionsController', () => {
   it('should find my missions', async () => {
     mockMissionsService.findByCompany.mockResolvedValue([]);
     const result = await controller.findMyMissions(req);
-    expect(mockMissionsService.findByCompany).toHaveBeenCalledWith('company-id');
+    expect(mockMissionsService.findByCompany).toHaveBeenCalledWith(
+      'company-id',
+    );
     expect(result).toEqual([]);
   });
 
@@ -58,13 +65,20 @@ describe('MissionsController', () => {
   });
 
   it('should update a mission', async () => {
-    mockMissionsService.update.mockResolvedValue({ _id: '1', title: 'Updated' });
-    const result = await controller.update(req, '1', { title: 'Updated' } as any);
+    mockMissionsService.update.mockResolvedValue({
+      _id: '1',
+      title: 'Updated',
+    });
+    const result = await controller.update(req, '1', {
+      title: 'Updated',
+    } as any);
     expect(result).toEqual({ _id: '1', title: 'Updated' });
   });
 
   it('should delete a mission', async () => {
-    mockMissionsService.delete.mockResolvedValue({ message: 'Mission deleted successfully' });
+    mockMissionsService.delete.mockResolvedValue({
+      message: 'Mission deleted successfully',
+    });
     const result = await controller.delete(req, '1');
     expect(result).toEqual({ message: 'Mission deleted successfully' });
   });

@@ -10,7 +10,11 @@ export class DocumentsService {
     @InjectModel(Document.name) private documentModel: Model<Document>,
   ) {}
 
-  async uploadDocument(userId: string, file: Express.Multer.File, type: string) {
+  async uploadDocument(
+    userId: string,
+    file: Express.Multer.File,
+    type: string,
+  ) {
     return this.documentModel.create({
       userId,
       filename: file.filename,

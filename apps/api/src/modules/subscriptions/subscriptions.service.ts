@@ -131,7 +131,7 @@ export class SubscriptionsService {
     }
 
     if (event.type === 'checkout.session.completed') {
-      const session = event.data.object as Stripe.Checkout.Session;
+      const session = event.data.object;
       const { companyId, plan } = session.metadata!;
       const stripeSubId = session.subscription as string;
 
@@ -150,7 +150,7 @@ export class SubscriptionsService {
     }
 
     if (event.type === 'invoice.payment_failed') {
-      const invoice = event.data.object as Stripe.Invoice;
+      const invoice = event.data.object;
       const subId = (invoice as any).subscription as string;
       await this.subModel.findOneAndUpdate(
         { stripeSubscriptionId: subId },
@@ -159,7 +159,7 @@ export class SubscriptionsService {
     }
 
     if (event.type === 'customer.subscription.deleted') {
-      const stripeSub = event.data.object as Stripe.Subscription;
+      const stripeSub = event.data.object;
       await this.subModel.findOneAndUpdate(
         { stripeSubscriptionId: stripeSub.id },
         { status: SubscriptionStatus.CANCELED },
@@ -167,7 +167,7 @@ export class SubscriptionsService {
     }
 
     if (event.type === 'invoice.payment_succeeded') {
-      const invoice = event.data.object as Stripe.Invoice;
+      const invoice = event.data.object;
       if (invoice.billing_reason === 'subscription_cycle') {
         const subId = (invoice as any).subscription as string;
         const stripeSub = await this.stripe.subscriptions.retrieve(subId);

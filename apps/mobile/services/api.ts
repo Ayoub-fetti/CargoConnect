@@ -2,6 +2,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { CONFIG } from '@/constants/config';
 
+if (__DEV__) {
+  console.log('[CargoConnect] API_BASE_URL =', CONFIG.API_BASE_URL);
+}
+
 const ACCESS_TOKEN_KEY = 'cc_access_token';
 const REFRESH_TOKEN_KEY = 'cc_refresh_token';
 const USER_KEY = 'cc_user';

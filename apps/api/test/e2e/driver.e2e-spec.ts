@@ -21,14 +21,19 @@ describe('Driver Workflow (e2e)', () => {
       imports: [AppModule],
     })
       .overrideProvider(EmailService)
-      .useValue({ sendVerificationEmail: jest.fn(), sendPasswordResetEmail: jest.fn() })
+      .useValue({
+        sendVerificationEmail: jest.fn(),
+        sendPasswordResetEmail: jest.fn(),
+      })
       .compile();
 
     app = moduleRef.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     await app.init();
 
-    const userModel: Model<User> = moduleRef.get(getModelToken(User.name), { strict: false });
+    const userModel: Model<User> = moduleRef.get(getModelToken(User.name), {
+      strict: false,
+    });
     const subService = moduleRef.get(SubscriptionsService, { strict: false });
 
     const driverRes = await request(app.getHttpServer())
@@ -40,7 +45,10 @@ describe('Driver Workflow (e2e)', () => {
         phone: '0600000000',
       });
     expect(driverRes.status).toBe(201);
-    await userModel.updateOne({ email: 'driver@test.com' }, { isVerified: true });
+    await userModel.updateOne(
+      { email: 'driver@test.com' },
+      { isVerified: true },
+    );
 
     const companyRes = await request(app.getHttpServer())
       .post('/auth/register/company')
@@ -50,7 +58,10 @@ describe('Driver Workflow (e2e)', () => {
         companyName: 'Driver Test Corp',
       });
     expect(companyRes.status).toBe(201);
-    await userModel.updateOne({ email: 'company@test.com' }, { isVerified: true });
+    await userModel.updateOne(
+      { email: 'company@test.com' },
+      { isVerified: true },
+    );
     const company = await userModel.findOne({ email: 'company@test.com' });
     expect(company).not.toBeNull();
 

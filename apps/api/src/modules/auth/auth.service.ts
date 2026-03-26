@@ -48,7 +48,11 @@ export class AuthService {
       emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 
-    await this.emailService.sendVerificationEmail(dto.email, verificationToken);
+    await this.emailService.sendVerificationEmail(
+      dto.email,
+      verificationToken,
+      Role.COMPANY,
+    );
 
     return {
       message:
@@ -77,7 +81,11 @@ export class AuthService {
       emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 
-    await this.emailService.sendVerificationEmail(dto.email, verificationToken);
+    await this.emailService.sendVerificationEmail(
+      dto.email,
+      verificationToken,
+      Role.DRIVER,
+    );
 
     return {
       message:

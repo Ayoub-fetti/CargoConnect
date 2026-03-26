@@ -19,7 +19,7 @@ export function useAuth() {
 
   return {
     auth,
-    isAuthenticated: auth.status === 'authenticated' && !!auth.accessToken,
+    isAuthenticated: auth.status === 'authenticated' && !!auth.accessToken && !!auth.user,
     login: (payload: LoginDto) => dispatch(login(payload)),
     registerDriver: (payload: RegisterDriverDto) => dispatch(registerDriver(payload)),
     logout: () => dispatch(logout()),

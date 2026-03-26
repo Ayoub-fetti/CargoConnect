@@ -21,7 +21,10 @@ describe('Company Workflow (e2e)', () => {
       imports: [AppModule],
     })
       .overrideProvider(EmailService)
-      .useValue({ sendVerificationEmail: jest.fn(), sendPasswordResetEmail: jest.fn() })
+      .useValue({
+        sendVerificationEmail: jest.fn(),
+        sendPasswordResetEmail: jest.fn(),
+      })
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -37,10 +40,15 @@ describe('Company Workflow (e2e)', () => {
       });
     expect(registerRes.status).toBe(201);
 
-    const userModel: Model<User> = moduleRef.get(getModelToken(User.name), { strict: false });
+    const userModel: Model<User> = moduleRef.get(getModelToken(User.name), {
+      strict: false,
+    });
     const subService = moduleRef.get(SubscriptionsService, { strict: false });
 
-    await userModel.updateOne({ email: 'company@test.com' }, { isVerified: true });
+    await userModel.updateOne(
+      { email: 'company@test.com' },
+      { isVerified: true },
+    );
     const company = await userModel.findOne({ email: 'company@test.com' });
     expect(company).not.toBeNull();
 
