@@ -1,4 +1,5 @@
-import { api } from '@/services/api';
+import { CONFIG } from '@/constants/config';
+import { api, tokenStorage } from '@/services/api';
 
 export interface CreateApplicationDto {
   missionId: string;
@@ -39,11 +40,43 @@ function appendUploadFile(form: FormData, input: UploadFileInput) {
     }
   }
 
+  const normalizedUri =
+    input.fileUri.startsWith('file://') || input.fileUri.startsWith('content://')
+      ? input.fileUri
+      : `file://${input.fileUri}`;
+
   form.append('file', {
-    uri: input.fileUri,
+    uri: normalizedUri,
     name: input.fileName || 'upload.bin',
     type: input.mimeType || 'application/octet-stream',
   } as any);
+}
+
+async function postMultipart(path: string, form: FormData) {
+  const token = await tokenStorage.getAccessToken();
+
+  const response = await fetch(`${CONFIG.API_BASE_URL}${path}`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    body: form,
+  });
+
+  const rawBody = await response.text();
+  let parsed: any = null;
+  if (rawBody) {
+    try {
+      parsed = JSON.parse(rawBody);
+    } catch {
+      parsed = { message: rawBody };
+    }
+  }
+
+  if (!response.ok) {
+    const message = parsed?.message || `Upload failed (${response.status})`;
+    throw new Error(Array.isArray(message) ? message.join('\n') : message);
+  }
+
+  return parsed;
 }
 
 export const driverService = {
@@ -70,22 +103,14 @@ export const driverService = {
   async uploadAvatar(params: UploadFileInput) {
     const form = new FormData();
     appendUploadFile(form, params);
-
-    const { data } = await api.post('/profiles/avatar', form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    return data;
+    return postMultipart('/profiles/avatar', form);
   },
 
   async uploadDocument(params: UploadFileInput & { type: string }) {
     const form = new FormData();
     appendUploadFile(form, params);
     form.append('type', params.type);
-
-    const { data } = await api.post('/profiles/documents', form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    return data;
+    return postMultipart('/profiles/documents', form);
   },
 
   async getDocuments() {

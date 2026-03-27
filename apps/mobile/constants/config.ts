@@ -1,8 +1,24 @@
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
+type ExpoConstantsLike = {
+  expoConfig?: { hostUri?: string };
+  expoGoConfig?: { debuggerHost?: string; hostUri?: string };
+  manifest?: { debuggerHost?: string; hostUri?: string };
+  manifest2?: { extra?: { expoGo?: { debuggerHost?: string } } };
+};
+
+function hostFromUri(candidate: string | undefined) {
+  if (!candidate) return '';
+
+  const withoutProtocol = candidate.replace(/^https?:\/\//, '');
+  const withoutPath = withoutProtocol.split('/')[0] || '';
+  const host = withoutPath.split(':')[0] || '';
+  return host.trim();
+}
+
 function inferApiBaseUrl() {
-  const explicit = process.env.EXPO_PUBLIC_API_URL;
+  const explicit = process.env.EXPO_PUBLIC_API_URL?.trim();
   if (explicit) return explicit;
 
   if (Platform.OS === 'web' && typeof window !== 'undefined') {
@@ -11,13 +27,15 @@ function inferApiBaseUrl() {
     return `${protocol}://${host}:3000/api`;
   }
 
-  const hostUri =
-    Constants.expoConfig?.hostUri ||
-    (Constants as unknown as { manifest2?: { extra?: { expoGo?: { debuggerHost?: string } } } })
-      .manifest2?.extra?.expoGo?.debuggerHost ||
-    '';
+  const c = Constants as unknown as ExpoConstantsLike;
+  const host =
+    hostFromUri(c.expoConfig?.hostUri) ||
+    hostFromUri(c.expoGoConfig?.debuggerHost) ||
+    hostFromUri(c.expoGoConfig?.hostUri) ||
+    hostFromUri(c.manifest?.debuggerHost) ||
+    hostFromUri(c.manifest?.hostUri) ||
+    hostFromUri(c.manifest2?.extra?.expoGo?.debuggerHost);
 
-  const host = hostUri.split(':')[0];
   if (host) {
     return `http://${host}:3000/api`;
   }

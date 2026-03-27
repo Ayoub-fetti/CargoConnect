@@ -14,6 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
+import { AxiosError } from 'axios';
 import { CONFIG } from '@/constants/config';
 import { driverService } from '@/services/driver.service';
 
@@ -34,6 +35,8 @@ type DriverDocument = {
 	type: string;
 	createdAt: string;
 };
+
+const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024;
 
 export default function ProfileScreen() {
 	const [loading, setLoading] = useState(true);
@@ -146,19 +149,37 @@ export default function ProfileScreen() {
 		if (picked.canceled || picked.assets.length === 0) return;
 
 		const asset = picked.assets[0];
+		if (asset.size && asset.size > MAX_DOCUMENT_SIZE) {
+			Alert.alert('Error', 'File is too large. Maximum size is 10MB.');
+			return;
+		}
+
+		const normalizedType = documentType.trim().toUpperCase() || 'OTHER';
 		setUploading(true);
 		try {
 			await driverService.uploadDocument({
 				fileUri: asset.uri,
-				fileName: asset.name,
+				fileName: asset.name || 'document',
 				mimeType: asset.mimeType || 'application/octet-stream',
 				webFile: (asset as any).file,
-				type: documentType,
+				type: normalizedType,
 			});
 			Alert.alert('Success', 'Document uploaded.');
 			await loadData();
-		} catch {
-			Alert.alert('Error', 'Document upload failed.');
+		} catch (error) {
+			const err = error as AxiosError<{ message?: string | string[] }>;
+			const apiMessage = err.response?.data?.message;
+			const details = Array.isArray(apiMessage) ? apiMessage.join('\n') : apiMessage;
+			const isNetworkError = !err.response &&
+				(err.message?.toLowerCase().includes('network') || err.code === 'ERR_NETWORK');
+			const networkHelp = isNetworkError
+				? `Network error. API URL: ${CONFIG.API_BASE_URL}\nMake sure your phone and backend are on the same Wi-Fi and the API server is running.`
+				: null;
+			const fallback =
+				err.code === 'ECONNABORTED'
+					? 'Upload timed out. Please try with a smaller file or a better connection.'
+					: err.message || 'Document upload failed.';
+			Alert.alert('Error', details || networkHelp || fallback);
 		} finally {
 			setUploading(false);
 		}
