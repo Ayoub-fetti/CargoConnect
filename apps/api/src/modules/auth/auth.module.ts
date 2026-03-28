@@ -21,8 +21,13 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        secret: config.get('jwt.secret'),
-        signOptions: { expiresIn: config.get('jwt.expiresIn') },
+        secret:
+          config.get('jwt.secret') ||
+          process.env.JWT_SECRET ||
+          'test-jwt-secret',
+        signOptions: {
+          expiresIn: config.get('jwt.expiresIn') || '7d',
+        },
       }),
     }),
     MongooseModule.forFeature([
