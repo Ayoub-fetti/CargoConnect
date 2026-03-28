@@ -12,9 +12,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private configService: ConfigService,
     @InjectModel(User.name) private userModel: Model<User>,
   ) {
+    const jwtSecret =
+      configService.get<string>('jwt.secret') ||
+      process.env.JWT_SECRET ||
+      'test-jwt-secret';
+
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: configService.get<string>('jwt.secret')!,
+      secretOrKey: jwtSecret,
     });
   }
 

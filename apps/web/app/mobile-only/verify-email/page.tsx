@@ -92,7 +92,9 @@ function VerifyDriverEmailFallback() {
         <h1 className="text-3xl font-black tracking-tight text-black">
           Open CargoConnect App
         </h1>
-        <p className="mt-4 text-sm text-gray-500">Preparing verification link...</p>
+        <p className="mt-4 text-sm text-gray-500">
+          Preparing verification link...
+        </p>
       </div>
     </div>
   );

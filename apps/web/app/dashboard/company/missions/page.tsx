@@ -173,42 +173,42 @@ export default function MissionsPage() {
             const missionId = m.id ?? (m as { _id?: string })._id;
 
             return (
-            <div
-              key={missionId}
-              className="group flex items-center justify-between rounded-2xl border border-gray-100 p-5 hover:border-black transition-colors duration-200"
-            >
-              <div className="flex items-center gap-5">
-                {/* Status dot */}
-                <div
-                  className={`h-2 w-2 rounded-full flex-shrink-0 ${
-                    m.status === "OPEN"
-                      ? "bg-black"
-                      : m.status === "IN_PROGRESS"
-                        ? "bg-gray-400"
-                        : "bg-gray-200"
-                  }`}
-                />
+              <div
+                key={missionId}
+                className="group flex items-center justify-between rounded-2xl border border-gray-100 p-5 hover:border-black transition-colors duration-200"
+              >
+                <div className="flex items-center gap-5">
+                  {/* Status dot */}
+                  <div
+                    className={`h-2 w-2 rounded-full flex-shrink-0 ${
+                      m.status === "OPEN"
+                        ? "bg-black"
+                        : m.status === "IN_PROGRESS"
+                          ? "bg-gray-400"
+                          : "bg-gray-200"
+                    }`}
+                  />
 
-                <div>
-                  <p className="font-bold text-black text-sm">{m.title}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">
-                    {m.departureLocation} → {m.arrivalLocation}
-                  </p>
+                  <div>
+                    <p className="font-bold text-black text-sm">{m.title}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      {m.departureLocation} → {m.arrivalLocation}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-6">
+                  <span className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                    {statusLabel[m.status] ?? m.status}
+                  </span>
+                  <Link
+                    href={`/dashboard/company/missions/${missionId}`}
+                    className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-gray-400 hover:border-black hover:text-black transition-all duration-200 group-hover:border-gray-300"
+                  >
+                    Voir →
+                  </Link>
                 </div>
               </div>
-
-              <div className="flex items-center gap-6">
-                <span className="text-xs font-bold uppercase tracking-widest text-gray-400">
-                  {statusLabel[m.status] ?? m.status}
-                </span>
-                <Link
-                  href={`/dashboard/company/missions/${missionId}`}
-                  className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-gray-400 hover:border-black hover:text-black transition-all duration-200 group-hover:border-gray-300"
-                >
-                  Voir →
-                </Link>
-              </div>
-            </div>
             );
           })}
         </div>
