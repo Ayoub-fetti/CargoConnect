@@ -25,6 +25,11 @@ describe('Company Workflow (e2e)', () => {
         sendVerificationEmail: jest.fn(),
         sendPasswordResetEmail: jest.fn(),
       })
+      .overrideProvider(SubscriptionsService)
+      .useValue({
+        getOrCreateSubscription: jest.fn().mockResolvedValue({}),
+        getStatus: jest.fn().mockResolvedValue({}),
+      })
       .compile();
 
     app = moduleRef.createNestApplication();

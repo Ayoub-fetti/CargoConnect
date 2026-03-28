@@ -8,6 +8,7 @@ import { AppModule } from '../../src/app.module';
 import { startTestDb, stopTestDb } from '../helpers/db.helper';
 import { User } from '../../src/database/schemas/user.schema';
 import { EmailService } from '../../src/modules/email/email.service';
+import { SubscriptionsService } from '../../src/modules/subscriptions/subscriptions.service';
 
 describe('Admin Workflow (e2e)', () => {
   let app: INestApplication;
@@ -23,6 +24,11 @@ describe('Admin Workflow (e2e)', () => {
       .useValue({
         sendVerificationEmail: jest.fn(),
         sendPasswordResetEmail: jest.fn(),
+      })
+      .overrideProvider(SubscriptionsService)
+      .useValue({
+        getOrCreateSubscription: jest.fn().mockResolvedValue({}),
+        getStatus: jest.fn().mockResolvedValue({}),
       })
       .compile();
 
