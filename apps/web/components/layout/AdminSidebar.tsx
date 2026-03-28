@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "../../hooks/useAuth";
 
 const links = [
-  { href: "/dashboard/admin",       label: "Dashboard" },
+  { href: "/dashboard/admin", label: "Dashboard" },
   { href: "/dashboard/admin/users", label: "Utilisateurs" },
   { href: "/dashboard/admin/bills", label: "Factures" },
 ];
@@ -21,7 +21,6 @@ export default function AdminSidebar() {
 
   return (
     <aside className="flex h-full w-56 flex-col border-r border-gray-100 bg-white px-4 py-8 justify-between">
-
       {/* Top */}
       <div>
         <Link
@@ -60,7 +59,6 @@ export default function AdminSidebar() {
       >
         Déconnexion →
       </button>
-
     </aside>
   );
 }

@@ -14,15 +14,26 @@ export default function CompanyDashboard() {
   }, []);
 
   const stats = [
-    { label: "Total",       value: missions.length,                                          sub: "missions créées" },
-    { label: "Ouvertes",    value: missions.filter((m) => m.status === "OPEN").length,        sub: "en attente de chauffeur" },
-    { label: "En cours",    value: missions.filter((m) => m.status === "IN_PROGRESS").length, sub: "actuellement actives" },
-    { label: "Terminées",   value: missions.filter((m) => m.status === "CLOSED").length,      sub: "missions clôturées" },
+    { label: "Total", value: missions.length, sub: "missions créées" },
+    {
+      label: "Ouvertes",
+      value: missions.filter((m) => m.status === "OPEN").length,
+      sub: "en attente de chauffeur",
+    },
+    {
+      label: "En cours",
+      value: missions.filter((m) => m.status === "IN_PROGRESS").length,
+      sub: "actuellement actives",
+    },
+    {
+      label: "Terminées",
+      value: missions.filter((m) => m.status === "CLOSED").length,
+      sub: "missions clôturées",
+    },
   ];
 
   return (
     <div className="min-h-screen bg-white p-8 space-y-10">
-
       {/* Header */}
       <div className="border-b border-gray-100 pb-8 flex items-end justify-between">
         <div>
@@ -33,7 +44,9 @@ export default function CompanyDashboard() {
             {profile?.companyName ?? "Entreprise"}
           </h1>
           {profile?.location && (
-            <p className="mt-2 text-sm text-gray-400 font-medium">{profile.location}</p>
+            <p className="mt-2 text-sm text-gray-400 font-medium">
+              {profile.location}
+            </p>
           )}
         </div>
 
@@ -56,7 +69,10 @@ export default function CompanyDashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-px bg-gray-100 rounded-2xl overflow-hidden sm:grid-cols-4">
         {stats.map(({ label, value, sub }) => (
-          <div key={label} className="bg-white p-8 group hover:bg-black transition-colors duration-300">
+          <div
+            key={label}
+            className="bg-white p-8 group hover:bg-black transition-colors duration-300"
+          >
             <p className="text-xs font-semibold uppercase tracking-widest text-gray-300 group-hover:text-gray-500 transition-colors">
               {label}
             </p>
@@ -77,7 +93,9 @@ export default function CompanyDashboard() {
         </p>
         {missions.length === 0 ? (
           <div className="py-10 text-center">
-            <p className="text-sm text-gray-300 font-medium">Aucune mission pour le moment.</p>
+            <p className="text-sm text-gray-300 font-medium">
+              Aucune mission pour le moment.
+            </p>
             <Link
               href="/dashboard/company/missions"
               className="mt-4 inline-block rounded-full bg-black px-6 py-2.5 text-xs font-bold uppercase tracking-widest text-white hover:bg-gray-900 transition-all duration-200"
@@ -88,16 +106,30 @@ export default function CompanyDashboard() {
         ) : (
           <div className="space-y-3">
             {missions.slice(0, 5).map((m: any) => (
-              <div key={m._id} className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0">
+              <div
+                key={m._id}
+                className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0"
+              >
                 <div className="flex items-center gap-4">
-                  <div className={`h-1.5 w-1.5 rounded-full ${
-                    m.status === "OPEN"        ? "bg-black" :
-                    m.status === "IN_PROGRESS" ? "bg-gray-400" : "bg-gray-200"
-                  }`} />
-                  <span className="text-sm font-semibold text-black">{m.title ?? "Mission sans titre"}</span>
+                  <div
+                    className={`h-1.5 w-1.5 rounded-full ${
+                      m.status === "OPEN"
+                        ? "bg-black"
+                        : m.status === "IN_PROGRESS"
+                          ? "bg-gray-400"
+                          : "bg-gray-200"
+                    }`}
+                  />
+                  <span className="text-sm font-semibold text-black">
+                    {m.title ?? "Mission sans titre"}
+                  </span>
                 </div>
                 <span className="text-xs font-bold uppercase tracking-widest text-gray-300">
-                  {m.status === "OPEN" ? "Ouverte" : m.status === "IN_PROGRESS" ? "En cours" : "Terminée"}
+                  {m.status === "OPEN"
+                    ? "Ouverte"
+                    : m.status === "IN_PROGRESS"
+                      ? "En cours"
+                      : "Terminée"}
                 </span>
               </div>
             ))}
@@ -112,7 +144,6 @@ export default function CompanyDashboard() {
           </div>
         )}
       </div>
-
     </div>
   );
 }

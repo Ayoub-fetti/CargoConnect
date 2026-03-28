@@ -31,7 +31,6 @@ export default function LoginPage() {
 
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
-
       {/* Background */}
       <div
         className="absolute inset-0 bg-cover bg-center"
@@ -43,24 +42,17 @@ export default function LoginPage() {
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-md px-6">
-
         <div className="rounded-2xl bg-white/95 backdrop-blur p-8 shadow-xl">
-
-          <h1 className="text-3xl font-black text-black">
-            Connexion
-          </h1>
+          <h1 className="text-3xl font-black text-black">Connexion</h1>
 
           <p className="mt-2 text-sm text-gray-500">
             Accédez à votre espace CargoConnect
           </p>
 
           <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-5">
-
             {/* Email */}
             <div>
-              <label className="text-sm font-medium text-gray-700">
-                Email
-              </label>
+              <label className="text-sm font-medium text-gray-700">Email</label>
               <input
                 type="email"
                 required
@@ -101,19 +93,19 @@ export default function LoginPage() {
             >
               {loading ? "Connexion..." : "Se connecter"}
             </button>
-
           </form>
 
           {/* Footer */}
           <p className="mt-6 text-center text-sm text-gray-500">
             Pas encore de compte ?{" "}
-            <Link href="/register" className="text-black font-medium hover:underline">
+            <Link
+              href="/register"
+              className="text-black font-medium hover:underline"
+            >
               Créer un compte
             </Link>
           </p>
-
         </div>
-
       </div>
     </section>
   );

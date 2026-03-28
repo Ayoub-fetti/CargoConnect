@@ -3,7 +3,6 @@ import Link from "next/link";
 export default function Home() {
   return (
     <section className="relative flex min-h-[100vh] items-center justify-center overflow-hidden">
-
       {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center"
@@ -15,9 +14,10 @@ export default function Home() {
 
       {/* Content */}
       <div className="relative z-10 px-6 text-center max-w-2xl w-full mx-auto">
-
         <h1 className="text-6xl sm:text-7xl font-black text-white leading-tight tracking-tight">
-          Le fret,<br />sans friction.
+          Le fret,
+          <br />
+          sans friction.
         </h1>
 
         <p className="mt-6 text-white/80 text-lg">
@@ -26,7 +26,6 @@ export default function Home() {
 
         {/* Buttons */}
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-
           {/* Company */}
           <Link
             href="/register"
@@ -42,9 +41,7 @@ export default function Home() {
           >
             Je suis chauffeur
           </Link>
-
         </div>
-
       </div>
     </section>
   );

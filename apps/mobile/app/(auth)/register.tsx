@@ -142,7 +142,7 @@ export default function RegisterScreen() {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>ZONES D'OPÉRATION</Text>
+            <Text style={styles.inputLabel}>ZONES D`OPÉRATION</Text>
             <TextInput
               value={zone}
               onChangeText={setZone}

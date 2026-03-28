@@ -80,7 +80,7 @@ export default function VerifyEmailScreen() {
             <Text style={styles.statusLabel}>ERREUR</Text>
             <Text style={styles.title}>Lien Invalide</Text>
             <Text style={styles.subtitle}>
-              Ce lien de vérification a expiré ou n'est plus valide.
+              Ce lien de vérification a expiré ou n`est plus valide.
             </Text>
             <Text
               style={styles.backLink}

@@ -6,9 +6,7 @@ import { PassportModule } from '@nestjs/passport';
 import {
   User,
   UserSchema,
-  Driver,
   DriverSchema,
-  Company,
   CompanySchema,
 } from '../../database/schemas/user.schema';
 import { EmailModule } from '../email/email.module';

@@ -52,8 +52,12 @@ describe('UsersController', () => {
       avatar: 'path/to/avatar.png',
     });
     const result = await controller.uploadAvatar(req, {
-      path: 'path/to/avatar.png',
+      filename: 'avatar.png',
     } as any);
+    expect(mockUsersService.updateAvatar).toHaveBeenCalledWith(
+      'user-id',
+      'uploads/avatars/avatar.png',
+    );
     expect(result).toEqual({ avatar: 'path/to/avatar.png' });
   });
 

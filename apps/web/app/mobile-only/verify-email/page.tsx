@@ -1,10 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 
 export default function VerifyDriverEmailPage() {
+  return (
+    <Suspense fallback={<VerifyDriverEmailFallback />}>
+      <VerifyDriverEmailContent />
+    </Suspense>
+  );
+}
+
+function VerifyDriverEmailContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token") || "";
 
@@ -53,12 +61,15 @@ export default function VerifyDriverEmailPage() {
         </button>
 
         <p className="mt-4 text-xs text-gray-400">
-          If nothing happens, make sure Expo Go is open and Metro is running, then tap again.
+          If nothing happens, make sure Expo Go is open and Metro is running,
+          then tap again.
         </p>
 
         <div className="mt-4 rounded-lg border border-gray-100 bg-gray-50 p-3 text-left text-xs text-gray-600">
           <p className="font-semibold text-gray-700">Manual links</p>
-          <p className="mt-2 break-all">Expo Go: {expoGoLink || "Unavailable"}</p>
+          <p className="mt-2 break-all">
+            Expo Go: {expoGoLink || "Unavailable"}
+          </p>
           <p className="mt-1 break-all">App scheme: {nativeLink}</p>
         </div>
 
@@ -69,6 +80,19 @@ export default function VerifyDriverEmailPage() {
         >
           Back to login
         </Link>
+      </div>
+    </div>
+  );
+}
+
+function VerifyDriverEmailFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-white px-6 text-center">
+      <div className="w-full max-w-md rounded-2xl border border-gray-100 p-8 shadow-sm">
+        <h1 className="text-3xl font-black tracking-tight text-black">
+          Open CargoConnect App
+        </h1>
+        <p className="mt-4 text-sm text-gray-500">Preparing verification link...</p>
       </div>
     </div>
   );

@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -51,12 +47,10 @@ export class SubscriptionsService {
     // check stripe for cancel_at_period_end
     let cancelAtPeriodEnd = false;
     if (sub.stripeSubscriptionId) {
-      try {
-        const stripeSub = await this.stripe.subscriptions.retrieve(
-          sub.stripeSubscriptionId,
-        );
-        cancelAtPeriodEnd = stripeSub.cancel_at_period_end;
-      } catch {}
+      const stripeSub = await this.stripe.subscriptions.retrieve(
+        sub.stripeSubscriptionId,
+      );
+      cancelAtPeriodEnd = stripeSub.cancel_at_period_end;
     }
 
     return {

@@ -1,7 +1,7 @@
-import { useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '../store';
-import { setProfile, setLoading } from '../store/slices/companySlice';
-import { companyService } from '../services/company.service';
+import { useCallback } from "react";
+import { useAppDispatch, useAppSelector } from "../store";
+import { setProfile, setLoading } from "../store/slices/companySlice";
+import { companyService } from "../services/company.service";
 
 export function useCompany() {
   const dispatch = useAppDispatch();

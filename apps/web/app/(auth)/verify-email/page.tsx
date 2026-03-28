@@ -1,10 +1,18 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { authService } from "../../../services/auth.service";
 
 export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<VerifyEmailFallback />}>
+      <VerifyEmailContent />
+    </Suspense>
+  );
+}
+
+function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get("token");
@@ -99,6 +107,31 @@ export default function VerifyEmailPage() {
         @keyframes spin     { to { transform: rotate(360deg); } }
         @keyframes pop      { 0%{transform:scale(0.5);opacity:0} 70%{transform:scale(1.2)} 100%{transform:scale(1);opacity:1} }
         @keyframes progress { from{width:0%} to{width:100%} }
+      `}</style>
+    </div>
+  );
+}
+
+function VerifyEmailFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-white px-6">
+      <div className="w-full max-w-sm text-center">
+        <div className="flex justify-center mb-8">
+          <div
+            className="h-10 w-10 rounded-full border-2 border-gray-200 border-t-black"
+            style={{ animation: "spin 0.8s linear infinite" }}
+          />
+        </div>
+        <h2 className="text-2xl font-black text-black tracking-tight">
+          Vérification en cours...
+        </h2>
+        <p className="mt-3 text-sm text-gray-400">
+          Merci de patienter quelques instants.
+        </p>
+      </div>
+
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
     </div>
   );

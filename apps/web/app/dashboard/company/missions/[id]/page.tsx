@@ -6,7 +6,7 @@ import Link from "next/link";
 
 const STATUS_OPTIONS = ["OPEN", "IN_PROGRESS", "COMPLETED", "CANCELLED"];
 
-const statusColor: Record<string, string> = {
+const _statusColor: Record<string, string> = {
   OPEN: "bg-green-100 text-green-700",
   IN_PROGRESS: "bg-yellow-100 text-yellow-700",
   COMPLETED: "bg-blue-100 text-blue-700",

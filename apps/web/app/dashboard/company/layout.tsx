@@ -1,6 +1,10 @@
 import CompanySidebar from "../../../components/layout/CompanySidebar";
 
-export default function CompanyLayout({ children }: { children: React.ReactNode }) {
+export default function CompanyLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <CompanySidebar />

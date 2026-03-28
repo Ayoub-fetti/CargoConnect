@@ -86,7 +86,6 @@ export default function BillingPage() {
 
   return (
     <div className="min-h-screen bg-white p-8 space-y-10 max-w-4xl">
-
       {/* Header */}
       <div className="border-b border-gray-100 pb-8">
         <p className="text-xs font-semibold uppercase tracking-widest text-gray-300 mb-1">
@@ -99,7 +98,6 @@ export default function BillingPage() {
 
       {/* Status */}
       <div className="rounded-2xl border border-gray-100 p-8 space-y-4">
-
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-gray-300">
@@ -156,7 +154,6 @@ export default function BillingPage() {
       {/* Plans */}
       {sub?.status !== "active" && (
         <div className="space-y-6">
-
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-gray-300 mb-1">
               Abonnement
@@ -167,14 +164,11 @@ export default function BillingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-
             {PLANS.map((plan) => (
               <div
                 key={plan.key}
                 className={`flex flex-col justify-between rounded-2xl border p-6 transition-all duration-200 hover:border-black ${
-                  sub?.plan === plan.key
-                    ? "border-black"
-                    : "border-gray-100"
+                  sub?.plan === plan.key ? "border-black" : "border-gray-100"
                 }`}
               >
                 <div>
@@ -186,9 +180,7 @@ export default function BillingPage() {
                     {plan.price}
                   </p>
 
-                  <p className="text-xs text-gray-400 mt-1">
-                    {plan.period}
-                  </p>
+                  <p className="text-xs text-gray-400 mt-1">{plan.period}</p>
 
                   <p className="text-xs text-gray-400 mt-3">
                     {plan.description}
@@ -217,7 +209,6 @@ export default function BillingPage() {
                 </button>
               </div>
             ))}
-
           </div>
         </div>
       )}

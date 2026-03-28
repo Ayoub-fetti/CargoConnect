@@ -4,10 +4,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "../../hooks/useAuth";
 
 const links = [
-  { href: "/dashboard/company",          label: "Vue générale" },
+  { href: "/dashboard/company", label: "Vue générale" },
   { href: "/dashboard/company/missions", label: "Missions" },
-  { href: "/dashboard/company/billing",  label: "Facturation" },
-  { href: "/dashboard/company/profile",  label: "Profil" },
+  { href: "/dashboard/company/billing", label: "Facturation" },
+  { href: "/dashboard/company/profile", label: "Profil" },
 ];
 
 export default function CompanySidebar() {
@@ -22,7 +22,6 @@ export default function CompanySidebar() {
 
   return (
     <aside className="flex h-screen w-56 flex-col border-r border-gray-100 bg-white px-4 py-8 sticky top-0 justify-between">
-
       {/* Top */}
       <div>
         <Link
@@ -67,7 +66,6 @@ export default function CompanySidebar() {
       >
         Déconnexion →
       </button>
-
     </aside>
   );
 }

@@ -1,7 +1,7 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { getModelToken, getConnectionToken } from '@nestjs/mongoose';
-import { Connection, Model } from 'mongoose';
+import { getModelToken } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import request from 'supertest';
 import * as bcrypt from 'bcrypt';
 import { AppModule } from '../../src/app.module';

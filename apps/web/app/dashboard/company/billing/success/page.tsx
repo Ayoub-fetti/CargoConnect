@@ -7,7 +7,10 @@ export default function BillingSuccessPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const timer = setTimeout(() => router.push("/dashboard/company/billing"), 5000);
+    const timer = setTimeout(
+      () => router.push("/dashboard/company/billing"),
+      5000,
+    );
     return () => clearTimeout(timer);
   }, [router]);
 
@@ -15,9 +18,12 @@ export default function BillingSuccessPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-md rounded-2xl bg-white p-10 text-center shadow-md border border-gray-100">
         <div className="text-6xl">🎉</div>
-        <h1 className="mt-4 text-2xl font-black text-gray-900">Paiement réussi !</h1>
+        <h1 className="mt-4 text-2xl font-black text-gray-900">
+          Paiement réussi !
+        </h1>
         <p className="mt-2 text-sm text-gray-500">
-          Votre abonnement est maintenant actif. Vous allez être redirigé vers la page de facturation...
+          Votre abonnement est maintenant actif. Vous allez être redirigé vers
+          la page de facturation...
         </p>
         <Link
           href="/dashboard/company/billing"

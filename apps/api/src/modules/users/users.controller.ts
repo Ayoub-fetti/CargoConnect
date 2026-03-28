@@ -21,7 +21,7 @@ import { UsersService } from './users.service';
 import { UpdateDriverProfileDto } from './dto/update-driver-profile.dto';
 import { UpdateCompanyProfileDto } from './dto/update-company-profile.dto';
 import { diskStorage } from 'multer';
-import { extname, join } from 'path';
+import { basename, extname, join } from 'path';
 import { mkdirSync } from 'fs';
 
 const API_ROOT = join(__dirname, '..', '..', '..');
@@ -35,6 +35,18 @@ function getUploadDestination(folder: string) {
 
 function toStoredUploadPath(folder: string, filename: string) {
   return join('uploads', folder, filename).replace(/\\/g, '/');
+}
+
+function resolveUploadedFilename(file: Express.Multer.File) {
+  if (file.filename) {
+    return file.filename;
+  }
+
+  if (file.path) {
+    return basename(file.path);
+  }
+
+  throw new BadRequestException('Uploaded file name is missing');
 }
 
 @Controller('profiles')
@@ -72,7 +84,10 @@ export class UsersController {
       limits: { fileSize: 5 * 1024 * 1024 },
       fileFilter: (req, file, cb) => {
         if (!file.mimetype.match(/\/(jpg|jpeg|png)$/)) {
-          return cb(new BadRequestException('Only images allowed') as any, false);
+          return cb(
+            new BadRequestException('Only images allowed') as any,
+            false,
+          );
         }
         cb(null, true);
       },
@@ -85,7 +100,7 @@ export class UsersController {
 
     return this.usersService.updateAvatar(
       req.user.sub,
-      toStoredUploadPath('avatars', file.filename),
+      toStoredUploadPath('avatars', resolveUploadedFilename(file)),
     );
   }
 
@@ -113,7 +128,7 @@ export class UsersController {
 
     return this.usersService.updateLogo(
       req.user.sub,
-      toStoredUploadPath('logos', file.filename),
+      toStoredUploadPath('logos', resolveUploadedFilename(file)),
     );
   }
 
@@ -147,7 +162,7 @@ export class UsersController {
       req.user.sub,
       file,
       type,
-      toStoredUploadPath('documents', file.filename),
+      toStoredUploadPath('documents', resolveUploadedFilename(file)),
     );
   }
 

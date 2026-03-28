@@ -34,7 +34,9 @@ function extractDocumentsPayload(data: unknown): DriverDocument[] {
       return record.data as DriverDocument[];
     }
 
-    const firstArray = Object.values(record).find((value) => Array.isArray(value));
+    const firstArray = Object.values(record).find((value) =>
+      Array.isArray(value),
+    );
     if (Array.isArray(firstArray)) {
       return firstArray as DriverDocument[];
     }
@@ -124,7 +126,9 @@ export default function DriverProfilePage() {
       .catch((error) => {
         setDocuments([]);
         const message =
-          error?.response?.data?.message || error?.message || "Failed to load documents";
+          error?.response?.data?.message ||
+          error?.message ||
+          "Failed to load documents";
         setDocumentsError(String(message));
 
         setDocumentsDebug(
@@ -228,7 +232,9 @@ export default function DriverProfilePage() {
               Aucun document disponible.
             </p>
             {documentsError ? (
-              <p className="text-xs text-red-500 mt-3">Erreur: {documentsError}</p>
+              <p className="text-xs text-red-500 mt-3">
+                Erreur: {documentsError}
+              </p>
             ) : null}
           </div>
         )}

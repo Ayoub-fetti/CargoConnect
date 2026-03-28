@@ -1,7 +1,6 @@
 export default function Contact() {
   return (
     <section className="mx-auto max-w-xl px-6 py-32 text-center">
-
       <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-6">
         Contact
       </p>
@@ -37,7 +36,6 @@ export default function Contact() {
           Envoyer
         </button>
       </form>
-
     </section>
   );
 }

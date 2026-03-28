@@ -1,6 +1,21 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Mission } from "../../../packages/types/mission";
+// import { Mission } from "../../../../packages/types/mission";
 
+export enum MissionStatus {
+  OPEN = "OPEN",
+  IN_PROGRESS = "IN_PROGRESS",
+  CLOSED = "CLOSED",
+}
+export interface Mission {
+  id: string;
+  title: string;
+  description: string;
+  departureLocation: string;
+  arrivalLocation: string;
+  salary: string;
+  status: MissionStatus;
+  createdAt: Date;
+}
 interface MissionState {
   missions: Mission[];
   loading: boolean;

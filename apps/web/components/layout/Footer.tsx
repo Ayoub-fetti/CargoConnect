@@ -4,7 +4,6 @@ export default function Footer() {
   return (
     <footer className="w-full bg-white border-t border-gray-100 px-8 py-10">
       <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-6">
-
         {/* Logo */}
         <span
           className="text-lg font-black tracking-tight text-black uppercase"
@@ -39,7 +38,6 @@ export default function Footer() {
         <p className="text-xs text-gray-400 font-medium">
           © {new Date().getFullYear()} CargoConnect. Tous droits réservés.
         </p>
-
       </div>
     </footer>
   );

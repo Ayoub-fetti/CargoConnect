@@ -3,14 +3,23 @@ import { useEffect, useState } from "react";
 import { useMissions } from "../../../../hooks/useMissions";
 import { missionService } from "../../../../services/mission.service";
 import Link from "next/link";
-import { MissionStatus } from "../../../../../../packages/types/enums";
 
-const EMPTY = { title: "", description: "", origin: "", destination: "", cargoType: "", weight: 0, price: 0, departureDate: "", requiredLicenses: "" };
+const EMPTY = {
+  title: "",
+  description: "",
+  origin: "",
+  destination: "",
+  cargoType: "",
+  weight: 0,
+  price: 0,
+  departureDate: "",
+  requiredLicenses: "",
+};
 
 const statusLabel: Record<string, string> = {
-  OPEN:        "Ouverte",
+  OPEN: "Ouverte",
   IN_PROGRESS: "En cours",
-  CLOSED:      "Terminée",
+  CLOSED: "Terminée",
 };
 
 export default function MissionsPage() {
@@ -19,7 +28,9 @@ export default function MissionsPage() {
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => { fetchMissions(); }, []);
+  useEffect(() => {
+    fetchMissions();
+  }, []);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,26 +53,31 @@ export default function MissionsPage() {
   };
 
   const fields = [
-    { name: "title",            label: "Titre",                          type: "text",   col: 2 },
-    { name: "origin",           label: "Origine",                        type: "text" },
-    { name: "destination",      label: "Destination",                    type: "text" },
-    { name: "cargoType",        label: "Type de cargaison",              type: "text" },
-    { name: "weight",           label: "Poids (kg)",                     type: "number" },
-    { name: "price",            label: "Prix (MAD)",                     type: "number" },
-    { name: "departureDate",    label: "Date de départ",                 type: "date" },
-    { name: "requiredLicenses", label: "Licences requises (séparées par virgule)", type: "text" },
+    { name: "title", label: "Titre", type: "text", col: 2 },
+    { name: "origin", label: "Origine", type: "text" },
+    { name: "destination", label: "Destination", type: "text" },
+    { name: "cargoType", label: "Type de cargaison", type: "text" },
+    { name: "weight", label: "Poids (kg)", type: "number" },
+    { name: "price", label: "Prix (MAD)", type: "number" },
+    { name: "departureDate", label: "Date de départ", type: "date" },
+    {
+      name: "requiredLicenses",
+      label: "Licences requises (séparées par virgule)",
+      type: "text",
+    },
   ];
 
   return (
     <div className="min-h-screen bg-white p-8 space-y-8">
-
       {/* Header */}
       <div className="border-b border-gray-100 pb-8 flex items-end justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-gray-300 mb-1">
             Entreprise
           </p>
-          <h1 className="text-5xl font-black text-black tracking-tight">Missions</h1>
+          <h1 className="text-5xl font-black text-black tracking-tight">
+            Missions
+          </h1>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
@@ -108,7 +124,9 @@ export default function MissionsPage() {
             <textarea
               rows={3}
               value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
               required
               className="w-full border-b-2 border-gray-100 pb-2 text-sm font-semibold text-black placeholder-gray-200 focus:outline-none focus:border-black transition-colors duration-200 bg-transparent resize-none"
             />
@@ -129,15 +147,19 @@ export default function MissionsPage() {
       {/* Mission list */}
       {loading ? (
         <div className="flex items-center gap-3 text-sm text-gray-400">
-          <div className="h-4 w-4 rounded-full border-2 border-gray-200 border-t-black"
-            style={{ animation: "spin 0.8s linear infinite" }} />
+          <div
+            className="h-4 w-4 rounded-full border-2 border-gray-200 border-t-black"
+            style={{ animation: "spin 0.8s linear infinite" }}
+          />
           Chargement...
         </div>
       ) : (
         <div className="space-y-3">
           {missions.length === 0 && (
             <div className="py-20 text-center border border-gray-100 rounded-2xl">
-              <p className="text-sm text-gray-300 font-medium">Aucune mission pour le moment.</p>
+              <p className="text-sm text-gray-300 font-medium">
+                Aucune mission pour le moment.
+              </p>
               <button
                 onClick={() => setShowForm(true)}
                 className="mt-4 inline-block rounded-full bg-black px-6 py-2.5 text-xs font-bold uppercase tracking-widest text-white hover:bg-gray-900 transition-all duration-200"
@@ -147,17 +169,25 @@ export default function MissionsPage() {
             </div>
           )}
 
-          {missions.map((m) => (
+          {missions.map((m) => {
+            const missionId = m.id ?? (m as { _id?: string })._id;
+
+            return (
             <div
-              key={m._id}
+              key={missionId}
               className="group flex items-center justify-between rounded-2xl border border-gray-100 p-5 hover:border-black transition-colors duration-200"
             >
               <div className="flex items-center gap-5">
                 {/* Status dot */}
-                <div className={`h-2 w-2 rounded-full flex-shrink-0 ${
-                  m.status === "OPEN"        ? "bg-black" :
-                  m.status === "IN_PROGRESS" ? "bg-gray-400" : "bg-gray-200"
-                }`} />
+                <div
+                  className={`h-2 w-2 rounded-full flex-shrink-0 ${
+                    m.status === "OPEN"
+                      ? "bg-black"
+                      : m.status === "IN_PROGRESS"
+                        ? "bg-gray-400"
+                        : "bg-gray-200"
+                  }`}
+                />
 
                 <div>
                   <p className="font-bold text-black text-sm">{m.title}</p>
@@ -172,14 +202,15 @@ export default function MissionsPage() {
                   {statusLabel[m.status] ?? m.status}
                 </span>
                 <Link
-                  href={`/dashboard/company/missions/${m._id}`}
+                  href={`/dashboard/company/missions/${missionId}`}
                   className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-gray-400 hover:border-black hover:text-black transition-all duration-200 group-hover:border-gray-300"
                 >
                   Voir →
                 </Link>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

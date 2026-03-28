@@ -24,14 +24,20 @@ export class MissionsService {
     const query = filters?.status ? { status: filters.status } : {};
     return this.missionModel
       .find(query)
-      .populate('companyId', 'companyName email location description legalInfo logo')
+      .populate(
+        'companyId',
+        'companyName email location description legalInfo logo',
+      )
       .sort({ createdAt: -1 });
   }
 
   async findOne(id: string) {
     const mission = await this.missionModel
       .findById(id)
-      .populate('companyId', 'companyName email location description legalInfo logo')
+      .populate(
+        'companyId',
+        'companyName email location description legalInfo logo',
+      )
       .populate('assignedDriverId', 'fullName phone');
 
     if (!mission) throw new NotFoundException('Mission not found');

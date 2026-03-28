@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 export default function Header() {
   const pathname = usePathname();
 
-  const linkClass = (path) =>
+  const linkClass = (path: string) =>
     `relative transition-colors duration-200
      ${pathname === path ? "text-black font-semibold" : "text-gray-500 hover:text-black"}
      after:absolute after:bottom-[-2px] after:left-0 after:h-[1.5px]
@@ -16,7 +16,6 @@ export default function Header() {
   return (
     <header className="w-full bg-white px-8 py-5 border-b border-gray-100">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
-
         {/* Logo */}
         <Link
           href="/"
@@ -46,7 +45,6 @@ export default function Header() {
         >
           Connexion
         </Link>
-
       </div>
     </header>
   );

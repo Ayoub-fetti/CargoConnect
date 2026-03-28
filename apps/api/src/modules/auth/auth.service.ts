@@ -114,10 +114,8 @@ export class AuthService {
     const payload = { sub: user._id, email: user.email, role: user.role };
     const accessToken = this.jwtService.sign(payload);
     const refreshToken = this.jwtService.sign(payload, {
-      secret:
-        this.configService.get('jwt.refreshSecret') ||
-        'refresh-secret-change-me',
-      expiresIn: this.configService.get('jwt.refreshExpiresIn') || '30d',
+      secret: this.configService.get('jwt.refreshSecret'),
+      expiresIn: this.configService.get('jwt.refreshExpiresIn'),
     });
 
     await this.userModel.findByIdAndUpdate(user._id, {

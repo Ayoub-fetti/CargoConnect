@@ -6,10 +6,13 @@ export default function MobileOnlyPage() {
       <div className="max-w-sm w-full">
         <div className="text-5xl mb-8">📱</div>
         <h1 className="text-4xl font-black text-black leading-tight tracking-tight">
-          Application<br />requise.
+          Application
+          <br />
+          requise.
         </h1>
         <p className="mt-5 text-sm text-gray-400 leading-relaxed">
-          L'espace chauffeur est uniquement disponible sur l'application mobile CargoConnect.
+          L'espace chauffeur est uniquement disponible sur l'application mobile
+          CargoConnect.
         </p>
         <div className="mt-10 flex flex-col gap-3">
           <a

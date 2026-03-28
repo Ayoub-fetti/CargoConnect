@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, Role } from '../../database/schemas/user.schema';
-import { Mission, MissionStatus } from '../missions/schemas/mission.schema';
+import { Mission } from '../missions/schemas/mission.schema';
 import { Application } from '../applications/schemas/application.schema';
 import { Subscription } from '../../database/schemas/subscription.schema';
 
