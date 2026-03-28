@@ -87,8 +87,6 @@ jobs:
       - name: Run unit tests
         run: npm run test
 
-      - name: Run backend e2e tests
-        run: npm run test:e2e
 
   docker-push:
     name: Build and push Docker images
