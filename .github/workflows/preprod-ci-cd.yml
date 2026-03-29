@@ -3,10 +3,10 @@ name: Preprod CI/CD
 on:
   push:
     branches:
-      - main
+      - preprod
   pull_request:
     branches:
-      - main
+      - preprod
 
 jobs:
   web-lint-test:
