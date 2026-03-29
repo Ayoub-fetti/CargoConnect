@@ -86,7 +86,7 @@ export default function ProfilePage() {
           <div className="relative">
             {profile?.logo ? (
               <img
-                src={`${process.env.NEXT_PUBLIC_UPLOADS_URL}/${profile.logo}`}
+                src={profile.logo}
                 className="h-20 w-20 rounded-full object-cover border border-gray-100"
                 alt="logo"
               />

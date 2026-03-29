@@ -7,20 +7,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, Role } from '../../database/schemas/user.schema';
 import { DocumentsService } from '../documents/documents.service';
-import * as fs from 'fs/promises';
-import { isAbsolute, join } from 'path';
-
-const API_ROOT = join(__dirname, '..', '..', '..');
-
-function resolveStoredPath(path: string) {
-  return isAbsolute(path) ? path : join(API_ROOT, path);
-}
+import { StorageService } from '../../common/services/storage.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private documentsService: DocumentsService,
+    private storageService: StorageService,
   ) {}
 
   async getProfile(userId: string) {
@@ -46,7 +40,7 @@ export class UsersService {
       throw new BadRequestException('Only drivers can upload avatars');
 
     if ((user as any).avatar) {
-      await fs.unlink(resolveStoredPath((user as any).avatar)).catch(() => {});
+      await this.storageService.deleteFile((user as any).avatar);
     }
 
     (user as any).avatar = path;
@@ -60,7 +54,7 @@ export class UsersService {
       throw new BadRequestException('Invalid user');
 
     if ((user as any).logo) {
-      await fs.unlink(resolveStoredPath((user as any).logo)).catch(() => {});
+      await this.storageService.deleteFile((user as any).logo);
     }
 
     (user as any).logo = path;

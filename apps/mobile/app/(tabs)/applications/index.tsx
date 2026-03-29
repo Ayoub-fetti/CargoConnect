@@ -3,12 +3,10 @@ import { ActivityIndicator, FlatList, Image, Text, View, StyleSheet, StatusBar }
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppDispatch, useAppSelector } from '@/hooks/useAuth';
 import { fetchMyApplications } from '@/store/missionStore';
-import { CONFIG } from '@/constants/config';
 
 function toPublicAssetUrl(path?: string) {
   if (!path) return null;
-  if (path.startsWith('http://') || path.startsWith('https://')) return path;
-  return `${CONFIG.API_BASE_URL.replace('/api', '')}/${path.replace(/^\/+/, '')}`;
+  return path;
 }
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {

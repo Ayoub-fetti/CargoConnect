@@ -2,7 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
+import { FilesController } from './files.controller';
 import { AppService } from './app.service';
+import { CommonModule } from './common/common.module';
 import databaseConfig from './config/database.config';
 import jwtConfig from './config/jwt.config';
 import { AuthModule } from './modules/auth/auth.module';
@@ -24,6 +26,7 @@ import { AdminModule } from './modules/admin/admin.module';
         uri: config.get<string>('database.uri'),
       }),
     }),
+    CommonModule,
     AuthModule,
     UsersModule,
     MissionsModule,
@@ -31,7 +34,7 @@ import { AdminModule } from './modules/admin/admin.module';
     SubscriptionsModule,
     AdminModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, FilesController],
   providers: [AppService],
 })
 export class AppModule {}

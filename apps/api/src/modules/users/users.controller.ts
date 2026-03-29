@@ -18,41 +18,23 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../../database/schemas/user.schema';
 import { UsersService } from './users.service';
+import { StorageService } from '../../common/services/storage.service';
 import { UpdateDriverProfileDto } from './dto/update-driver-profile.dto';
 import { UpdateCompanyProfileDto } from './dto/update-company-profile.dto';
-import { diskStorage } from 'multer';
-import { basename, extname, join } from 'path';
-import { mkdirSync } from 'fs';
+import { extname } from 'path';
 
-const API_ROOT = join(__dirname, '..', '..', '..');
-const UPLOADS_ROOT = join(API_ROOT, 'uploads');
-
-function getUploadDestination(folder: string) {
-  const destination = join(UPLOADS_ROOT, folder);
-  mkdirSync(destination, { recursive: true });
-  return destination;
-}
-
-function toStoredUploadPath(folder: string, filename: string) {
-  return join('uploads', folder, filename).replace(/\\/g, '/');
-}
-
-function resolveUploadedFilename(file: Express.Multer.File) {
-  if (file.filename) {
-    return file.filename;
-  }
-
-  if (file.path) {
-    return basename(file.path);
-  }
-
-  throw new BadRequestException('Uploaded file name is missing');
+function generateFilename(folder: string, originalName: string): string {
+  const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+  return `${folder}-${uniqueSuffix}${extname(originalName)}`;
 }
 
 @Controller('profiles')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private storageService: StorageService,
+  ) {}
 
   @Get('me')
   getProfile(@Request() req) {
@@ -71,16 +53,6 @@ export class UsersController {
   @Roles(Role.DRIVER)
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: diskStorage({
-        destination: (req, file, cb) => {
-          cb(null, getUploadDestination('avatars'));
-        },
-        filename: (req, file, cb) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
-          cb(null, `avatar-${uniqueSuffix}${extname(file.originalname)}`);
-        },
-      }),
       limits: { fileSize: 5 * 1024 * 1024 },
       fileFilter: (req, file, cb) => {
         if (!file.mimetype.match(/\/(jpg|jpeg|png)$/)) {
@@ -93,63 +65,56 @@ export class UsersController {
       },
     }),
   )
-  uploadAvatar(@Request() req, @UploadedFile() file: Express.Multer.File) {
+  async uploadAvatar(
+    @Request() req,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
     if (!file) {
       throw new BadRequestException('Avatar file is required');
     }
 
-    return this.usersService.updateAvatar(
-      req.user.sub,
-      toStoredUploadPath('avatars', resolveUploadedFilename(file)),
+    const filename = generateFilename('avatar', file.originalname);
+    const storedPath = await this.storageService.uploadFile(
+      'avatars',
+      filename,
+      file.buffer,
+      file.mimetype,
     );
+
+    return this.usersService.updateAvatar(req.user.sub, storedPath);
   }
 
   @Post('logo')
   @Roles(Role.COMPANY)
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: diskStorage({
-        destination: (req, file, cb) => {
-          cb(null, getUploadDestination('logos'));
-        },
-        filename: (req, file, cb) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
-          cb(null, `logo-${uniqueSuffix}${extname(file.originalname)}`);
-        },
-      }),
       limits: { fileSize: 5 * 1024 * 1024 },
     }),
   )
-  uploadLogo(@Request() req, @UploadedFile() file: Express.Multer.File) {
+  async uploadLogo(@Request() req, @UploadedFile() file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException('Logo file is required');
     }
 
-    return this.usersService.updateLogo(
-      req.user.sub,
-      toStoredUploadPath('logos', resolveUploadedFilename(file)),
+    const filename = generateFilename('logo', file.originalname);
+    const storedPath = await this.storageService.uploadFile(
+      'logos',
+      filename,
+      file.buffer,
+      file.mimetype,
     );
+
+    return this.usersService.updateLogo(req.user.sub, storedPath);
   }
 
   @Post('documents')
   @Roles(Role.DRIVER, Role.COMPANY)
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: diskStorage({
-        destination: (req, file, cb) => {
-          cb(null, getUploadDestination('documents'));
-        },
-        filename: (req, file, cb) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
-          cb(null, `doc-${uniqueSuffix}${extname(file.originalname)}`);
-        },
-      }),
       limits: { fileSize: 10 * 1024 * 1024 },
     }),
   )
-  uploadDocument(
+  async uploadDocument(
     @Request() req,
     @UploadedFile() file: Express.Multer.File,
     @Body('type') type: string,
@@ -158,11 +123,19 @@ export class UsersController {
       throw new BadRequestException('Document file is required');
     }
 
+    const filename = generateFilename('doc', file.originalname);
+    const storedPath = await this.storageService.uploadFile(
+      'documents',
+      filename,
+      file.buffer,
+      file.mimetype,
+    );
+
     return this.usersService.uploadDocument(
       req.user.sub,
       file,
       type,
-      toStoredUploadPath('documents', resolveUploadedFilename(file)),
+      storedPath,
     );
   }
 

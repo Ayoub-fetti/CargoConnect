@@ -2,19 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Document } from '../../database/schemas/document.schema';
-import * as fs from 'fs/promises';
-import { isAbsolute, join } from 'path';
-
-const API_ROOT = join(__dirname, '..', '..', '..');
-
-function resolveStoredPath(path: string) {
-  return isAbsolute(path) ? path : join(API_ROOT, path);
-}
+import { StorageService } from '../../common/services/storage.service';
 
 @Injectable()
 export class DocumentsService {
   constructor(
     @InjectModel(Document.name) private documentModel: Model<Document>,
+    private storageService: StorageService,
   ) {}
 
   async uploadDocument(
@@ -57,7 +51,7 @@ export class DocumentsService {
   async deleteDocument(userId: string, documentId: string) {
     const doc = await this.documentModel.findOne({ _id: documentId, userId });
     if (doc) {
-      await fs.unlink(resolveStoredPath(doc.path)).catch(() => {});
+      await this.storageService.deleteFile(doc.path);
       await doc.deleteOne();
     }
     return { message: 'Document deleted' };

@@ -15,12 +15,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
 import { useAppDispatch, useAppSelector } from '@/hooks/useAuth';
 import { applyForMission, fetchMissionById } from '@/store/missionStore';
-import { CONFIG } from '@/constants/config';
 
 function toPublicAssetUrl(path?: string) {
   if (!path) return null;
-  if (path.startsWith('http://') || path.startsWith('https://')) return path;
-  return `${CONFIG.API_BASE_URL.replace('/api', '')}/${path.replace(/^\/+/, '')}`;
+  return path;
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {

@@ -45,45 +45,6 @@ function extractDocumentsPayload(data: unknown): DriverDocument[] {
   return [];
 }
 
-function getUploadsBaseUrl() {
-  const env = process.env.NEXT_PUBLIC_UPLOADS_URL;
-  if (env) return env.replace(/\/+$/, "");
-
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api";
-  return apiUrl.replace(/\/api\/?$/, "");
-}
-
-function buildUploadUrl(path?: string) {
-  if (!path) return "";
-  if (path.startsWith("http://") || path.startsWith("https://")) return path;
-
-  const normalized = path.replace(/\\/g, "/");
-  const uploadsBase = getUploadsBaseUrl();
-  const baseHasUploadsSuffix = /\/uploads$/i.test(uploadsBase);
-
-  let relativePath = normalized.replace(/^\/+/, "");
-
-  if (normalized.startsWith("uploads/")) {
-    relativePath = normalized;
-  }
-
-  const marker = "/uploads/";
-  const markerIndex = normalized.indexOf(marker);
-  if (markerIndex >= 0) {
-    relativePath = `uploads/${normalized.slice(markerIndex + marker.length)}`;
-  }
-
-  if (!relativePath.startsWith("uploads/")) {
-    relativePath = `uploads/${relativePath}`;
-  }
-
-  if (baseHasUploadsSuffix && relativePath.startsWith("uploads/")) {
-    relativePath = relativePath.slice("uploads/".length);
-  }
-
-  return `${uploadsBase}/${relativePath}`;
-}
-
 export default function DriverProfilePage() {
   const params = useParams<{ id: string | string[] }>();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -157,7 +118,7 @@ export default function DriverProfilePage() {
           {/* Avatar */}
           {driver.avatar ? (
             <img
-              src={buildUploadUrl(driver.avatar)}
+              src={driver.avatar}
               className="h-16 w-16 rounded-full object-cover"
               alt=""
             />
@@ -253,7 +214,7 @@ export default function DriverProfilePage() {
               </div>
 
               <a
-                href={buildUploadUrl(doc.path)}
+                href={doc.path}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-gray-400 hover:border-black hover:text-black transition-all duration-200"
