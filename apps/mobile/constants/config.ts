@@ -1,6 +1,10 @@
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
+const DEFAULT_PROD_API_URL =
+  'https://cargoconnect-api-fccka4c4g2afe6dm.francecentral-01.azurewebsites.net/api';
+const DEFAULT_PROD_WEB_URL = 'https://cargoconnect-beryl.vercel.app';
+
 type ExpoConstantsLike = {
   expoConfig?: { hostUri?: string };
   expoGoConfig?: { debuggerHost?: string; hostUri?: string };
@@ -20,6 +24,9 @@ function hostFromUri(candidate: string | undefined) {
 function inferApiBaseUrl() {
   const explicit = process.env.EXPO_PUBLIC_API_URL?.trim();
   if (explicit) return explicit;
+
+  // Use production backend by default outside development.
+  if (!__DEV__) return DEFAULT_PROD_API_URL;
 
   if (Platform.OS === 'web' && typeof window !== 'undefined') {
     const protocol = window.location.protocol === 'https:' ? 'https' : 'http';
@@ -47,4 +54,5 @@ function inferApiBaseUrl() {
 
 export const CONFIG = {
   API_BASE_URL: inferApiBaseUrl(),
+  WEB_BASE_URL: process.env.EXPO_PUBLIC_WEB_URL?.trim() || DEFAULT_PROD_WEB_URL,
 };

@@ -54,8 +54,16 @@ export default function RegisterScreen() {
     setLoading(false);
 
     if (result.meta.requestStatus === "rejected") {
+      const payload = result.payload;
       const message =
-        (result.payload as string | undefined) || "Échec de l’inscription";
+        typeof payload === "string"
+          ? payload
+          : payload &&
+              typeof payload === "object" &&
+              "message" in payload &&
+              typeof (payload as { message?: unknown }).message === "string"
+            ? (payload as { message: string }).message
+            : "Échec de l’inscription";
       setError(message);
       return;
     }

@@ -16,10 +16,11 @@ export class DocumentsService {
     file: Express.Multer.File,
     type: string,
     storedPath: string,
+    storedFilename: string,
   ) {
     return this.documentModel.create({
       userId,
-      filename: file.filename,
+      filename: storedFilename,
       originalName: file.originalname,
       path: storedPath,
       mimetype: file.mimetype,

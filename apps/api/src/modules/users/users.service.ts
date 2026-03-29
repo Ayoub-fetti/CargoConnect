@@ -67,8 +67,15 @@ export class UsersService {
     file: Express.Multer.File,
     type: string,
     storedPath: string,
+    storedFilename: string,
   ) {
-    return this.documentsService.uploadDocument(userId, file, type, storedPath);
+    return this.documentsService.uploadDocument(
+      userId,
+      file,
+      type,
+      storedPath,
+      storedFilename,
+    );
   }
 
   async getDocuments(userId: string) {

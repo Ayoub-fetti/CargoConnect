@@ -37,6 +37,13 @@ type DriverDocument = {
   createdAt: string;
 };
 
+const ALLOWED_DOCUMENT_TYPES = [
+  "CV",
+  "DRIVING_LICENSE",
+  "TRUCK_REGISTRATION",
+  "OTHER",
+] as const;
+
 // const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024;
 
 export default function ProfileScreen() {
@@ -137,6 +144,13 @@ export default function ProfileScreen() {
 
     if (picked.canceled) return;
     const asset = picked.assets[0];
+    const requestedType = documentType.trim().toUpperCase();
+    const normalizedType = (ALLOWED_DOCUMENT_TYPES as readonly string[]).includes(
+      requestedType,
+    )
+      ? requestedType
+      : "OTHER";
+
     setUploading(true);
     try {
       await driverService.uploadDocument({
@@ -144,7 +158,7 @@ export default function ProfileScreen() {
         fileName: asset.name,
         mimeType: asset.mimeType || "application/octet-stream",
         webFile: (asset as any).file,
-        type: documentType.trim().toUpperCase() || "OTHER",
+        type: normalizedType,
       });
       await loadData();
     } catch {
@@ -154,10 +168,13 @@ export default function ProfileScreen() {
     }
   };
 
-  const avatarUrl =
-    profile?.avatar && profile.avatar.startsWith("uploads")
-      ? `${CONFIG.API_BASE_URL.replace("/api", "")}/${profile.avatar}`
-      : null;
+  const apiOrigin = CONFIG.API_BASE_URL.replace(/\/api\/?$/, "");
+  const avatarUrl = profile?.avatar
+    ? profile.avatar.startsWith("http://") ||
+      profile.avatar.startsWith("https://")
+      ? profile.avatar
+      : `${apiOrigin}/${profile.avatar.replace(/^\/+/, "")}`
+    : null;
 
   if (loading) {
     return (
