@@ -4,13 +4,13 @@ on:
   pull_request:
     paths:
       - "apps/web/**"
-      - ".github/workflows/vercel-web.yml"
+      - ".github/workflows/vercel-ci-cd.yml"
   push:
     branches:
       - preprod
     paths:
       - "apps/web/**"
-      - ".github/workflows/vercel-web.yml"
+      - ".github/workflows/vercel-ci-cd.yml"
 
 jobs:
   ci:
