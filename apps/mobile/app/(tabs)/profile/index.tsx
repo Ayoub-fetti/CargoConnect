@@ -44,7 +44,7 @@ const ALLOWED_DOCUMENT_TYPES = [
   "OTHER",
 ] as const;
 
-// const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024;
+const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024;
 
 export default function ProfileScreen() {
   const [loading, setLoading] = useState(true);
@@ -144,6 +144,11 @@ export default function ProfileScreen() {
 
     if (picked.canceled) return;
     const asset = picked.assets[0];
+    if (typeof asset.size === "number" && asset.size > MAX_DOCUMENT_SIZE) {
+      Alert.alert("Erreur", "Le fichier dépasse la taille maximale de 10 MB.");
+      return;
+    }
+
     const requestedType = documentType.trim().toUpperCase();
     const normalizedType = (ALLOWED_DOCUMENT_TYPES as readonly string[]).includes(
       requestedType,
