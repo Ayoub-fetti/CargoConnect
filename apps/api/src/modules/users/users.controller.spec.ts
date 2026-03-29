@@ -3,6 +3,7 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
+import { StorageService } from '../../common/services/storage.service';
 
 const mockUsersService = {
   getProfile: jest.fn(),
@@ -14,13 +15,22 @@ const mockUsersService = {
   deleteDocument: jest.fn(),
 };
 
+const mockStorageService = {
+  uploadFile: jest.fn(),
+};
+
 describe('UsersController', () => {
   let controller: UsersController;
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [{ provide: UsersService, useValue: mockUsersService }],
+      providers: [
+        { provide: UsersService, useValue: mockUsersService },
+        { provide: StorageService, useValue: mockStorageService },
+      ],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue({ canActivate: () => true })
@@ -48,17 +58,31 @@ describe('UsersController', () => {
   });
 
   it('should upload avatar', async () => {
+    mockStorageService.uploadFile.mockResolvedValue(
+      'https://blob.example/uploads/avatars/avatar-123.png',
+    );
     mockUsersService.updateAvatar.mockResolvedValue({
-      avatar: 'path/to/avatar.png',
+      avatar: 'https://blob.example/uploads/avatars/avatar-123.png',
     });
     const result = await controller.uploadAvatar(req, {
-      filename: 'avatar.png',
+      originalname: 'avatar.png',
+      buffer: Buffer.from('avatar'),
+      mimetype: 'image/png',
     } as any);
+
+    expect(mockStorageService.uploadFile).toHaveBeenCalledWith(
+      'avatars',
+      expect.stringMatching(/^avatar-\d+-\d+\.png$/),
+      expect.any(Buffer),
+      'image/png',
+    );
     expect(mockUsersService.updateAvatar).toHaveBeenCalledWith(
       'user-id',
-      'uploads/avatars/avatar.png',
+      'https://blob.example/uploads/avatars/avatar-123.png',
     );
-    expect(result).toEqual({ avatar: 'path/to/avatar.png' });
+    expect(result).toEqual({
+      avatar: 'https://blob.example/uploads/avatars/avatar-123.png',
+    });
   });
 
   it('should get documents', async () => {
