@@ -3,7 +3,7 @@ name: API CI/CD (Azure)
 on:
   push:
     branches:
-      - preprod
+      - main
   workflow_dispatch:
 
 jobs:

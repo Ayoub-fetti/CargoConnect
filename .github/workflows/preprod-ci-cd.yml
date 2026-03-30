@@ -1,12 +1,12 @@
-name: Preprod CI/CD
+name: Lint & Tests CI/CD
 
 on:
   push:
     branches:
-      - preprod
+      - main
   pull_request:
     branches:
-      - preprod
+      - main
 
 jobs:
   web-lint-test:
