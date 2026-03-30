@@ -95,12 +95,12 @@ jobs:
       - web-lint-test
       - mobile-lint-test
       - api-lint-test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/preprod'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: read
     env:
       DOCKERHUB_NAMESPACE: ${{ vars.DOCKERHUB_NAMESPACE != '' && vars.DOCKERHUB_NAMESPACE || secrets.DOCKERHUB_USERNAME }}
-      SHA_TAG: preprod-${{ github.sha }}
+      SHA_TAG: main-${{ github.sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
