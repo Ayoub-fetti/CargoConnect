@@ -7,6 +7,19 @@ import { Role } from '../../database/schemas/user.schema';
 export class EmailService {
   private transporter: nodemailer.Transporter;
 
+  private normalizeMobileVerifyUrl(url: string | undefined): string {
+    const value = (url || '').trim();
+
+    if (!value) return 'mobile:///verify-email';
+
+    // Accept common variants and keep a single canonical deep-link.
+    if (/^mobile:\/\/\/?verify-email\/?$/i.test(value)) {
+      return 'mobile:///verify-email';
+    }
+
+    return value;
+  }
+
   constructor(private configService: ConfigService) {
     this.transporter = nodemailer.createTransport({
       host: this.configService.get('SMTP_HOST'),
@@ -29,8 +42,9 @@ export class EmailService {
       this.configService.get('DRIVER_VERIFY_URL') ||
       `${this.configService.get('FRONTEND_URL1')}/mobile-only/verify-email`;
 
-    const mobileVerifyUrl =
-      this.configService.get('MOBILE_VERIFY_URL') || 'mobile:///verify-email';
+    const mobileVerifyUrl = this.normalizeMobileVerifyUrl(
+      this.configService.get<string>('MOBILE_VERIFY_URL'),
+    );
 
     const baseUrl = role === Role.DRIVER ? driverVerifyUrl : webVerifyUrl;
     const url = `${baseUrl}?token=${encodeURIComponent(token)}`;

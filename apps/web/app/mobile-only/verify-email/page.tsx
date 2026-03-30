@@ -17,28 +17,11 @@ function VerifyDriverEmailContent() {
   const token = searchParams.get("token") || "";
 
   const nativeLink = useMemo(() => {
-    if (!token) return "mobile://verify-email";
+    if (!token) return "mobile:///verify-email";
     return `mobile:///verify-email?token=${encodeURIComponent(token)}`;
   }, [token]);
 
-  const expoGoLink = useMemo(() => {
-    if (typeof window === "undefined") return "";
-    const host = window.location.hostname;
-    if (!host) return "";
-    if (!token) return `exp://${host}:8081/--/verify-email`;
-    return `exp://${host}:8081/--/verify-email?token=${encodeURIComponent(token)}`;
-  }, [token]);
-
   const openApp = () => {
-    // First try Expo Go link (common in development via QR), then fallback to app scheme.
-    if (expoGoLink) {
-      window.location.href = expoGoLink;
-      setTimeout(() => {
-        window.location.href = nativeLink;
-      }, 800);
-      return;
-    }
-
     window.location.href = nativeLink;
   };
 
@@ -61,16 +44,13 @@ function VerifyDriverEmailContent() {
         </button>
 
         <p className="mt-4 text-xs text-gray-400">
-          If nothing happens, make sure Expo Go is open and Metro is running,
-          then tap again.
+          If nothing happens, make sure the CargoConnect app is installed, then
+          tap again.
         </p>
 
         <div className="mt-4 rounded-lg border border-gray-100 bg-gray-50 p-3 text-left text-xs text-gray-600">
           <p className="font-semibold text-gray-700">Manual links</p>
-          <p className="mt-2 break-all">
-            Expo Go: {expoGoLink || "Unavailable"}
-          </p>
-          <p className="mt-1 break-all">App scheme: {nativeLink}</p>
+          <p className="mt-2 break-all">App scheme: {nativeLink}</p>
         </div>
 
         <div className="mt-8 h-px w-full bg-gray-100" />
