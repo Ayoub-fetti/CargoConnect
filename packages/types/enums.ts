@@ -2,6 +2,8 @@ export enum Role {
   ADMIN = 'ADMIN',
   DRIVER = 'DRIVER',
   COMPANY = 'COMPANY',
+  // COMPANY = 'COMPANY',
+  // COMPANY = 'COMPANY',
 }
 
 export enum SubscriptionStatus {
