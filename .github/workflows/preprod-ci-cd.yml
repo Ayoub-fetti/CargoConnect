@@ -1,4 +1,4 @@
-name: Preprod CI/CD
+name: Lint & Tests CI/CD
 
 on:
   push:

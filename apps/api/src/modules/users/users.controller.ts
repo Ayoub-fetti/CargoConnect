@@ -28,6 +28,13 @@ function generateFilename(folder: string, originalName: string): string {
   return `${folder}-${uniqueSuffix}${extname(originalName)}`;
 }
 
+const ALLOWED_DOCUMENT_TYPES = [
+  'CV',
+  'DRIVING_LICENSE',
+  'TRUCK_REGISTRATION',
+  'OTHER',
+] as const;
+
 @Controller('profiles')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
@@ -123,6 +130,13 @@ export class UsersController {
       throw new BadRequestException('Document file is required');
     }
 
+    const normalizedType = (type || '').trim().toUpperCase();
+    if (!ALLOWED_DOCUMENT_TYPES.includes(normalizedType as any)) {
+      throw new BadRequestException(
+        `Invalid document type. Allowed values: ${ALLOWED_DOCUMENT_TYPES.join(', ')}`,
+      );
+    }
+
     const filename = generateFilename('doc', file.originalname);
     const storedPath = await this.storageService.uploadFile(
       'documents',
@@ -134,8 +148,9 @@ export class UsersController {
     return this.usersService.uploadDocument(
       req.user.sub,
       file,
-      type,
+      normalizedType,
       storedPath,
+      filename,
     );
   }
 

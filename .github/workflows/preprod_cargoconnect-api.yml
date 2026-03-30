@@ -1,9 +1,9 @@
-name: Build and deploy Node.js app to Azure Web App - cargoconnect-api
+name: API CI/CD (Azure)
 
 on:
   push:
     branches:
-      - preprod
+      - main
   workflow_dispatch:
 
 jobs:
@@ -18,17 +18,17 @@ jobs:
         with:
           node-version: '20.x'
 
-      # ✅ INSTALL ONLY API
+      # INSTALL ONLY API
       - name: Install dependencies
         working-directory: apps/api
         run: npm install
 
-      # ✅ BUILD ONLY API
+      # BUILD ONLY API
       - name: Build API
         working-directory: apps/api
         run: npm run build
 
-      # ✅ Upload ONLY API folder
+      # Upload ONLY API folder
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -56,7 +56,7 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E345F4FA0AD145BA87B1956933A17583 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8E78E4158EC8489889F0B78A22BBB21A }}
 
-      # ✅ DEPLOY ONLY API
+      # DEPLOY ONLY API
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:

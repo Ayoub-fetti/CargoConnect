@@ -30,6 +30,42 @@ const initialState: AuthState = {
   error: null,
 };
 
+function parseErrorMessage(data: unknown, fallback: string): string {
+  if (typeof data === 'string' && data.trim().length > 0) {
+    return data;
+  }
+
+  if (Array.isArray(data)) {
+    const parts = data
+      .map((value) => parseErrorMessage(value, ''))
+      .filter((value) => value.trim().length > 0);
+    if (parts.length > 0) {
+      return parts.join(', ');
+    }
+  }
+
+  if (data && typeof data === 'object') {
+    const payload = data as {
+      message?: unknown;
+      error?: unknown;
+      statusCode?: unknown;
+    };
+
+    if (payload.message !== undefined) {
+      const nestedMessage = parseErrorMessage(payload.message, '');
+      if (nestedMessage.trim().length > 0) {
+        return nestedMessage;
+      }
+    }
+
+    if (typeof payload.error === 'string' && payload.error.trim().length > 0) {
+      return payload.error;
+    }
+  }
+
+  return fallback;
+}
+
 export const hydrateAuth = createAsyncThunk('auth/hydrate', async () => {
   const [accessToken, refreshToken, userRaw] = await Promise.all([
     AsyncStorage.getItem(tokenStorage.keys.ACCESS_TOKEN_KEY),
@@ -78,13 +114,10 @@ export const login = createAsyncThunk(
       if (axios.isAxiosError(error)) {
         if (!error.response) {
           return rejectWithValue(
-            'Cannot reach API server. Check EXPO_PUBLIC_API_URL and that your phone can access backend on port 3000.'
+            'Cannot reach API server. Check EXPO_PUBLIC_API_URL (or default production API) and your internet connection.'
           );
         }
-        const message =
-          (error.response?.data as { message?: string } | undefined)?.message ||
-          error.message ||
-          'Login failed';
+        const message = parseErrorMessage(error.response?.data, error.message || 'Login failed');
         return rejectWithValue(message);
       }
       return rejectWithValue('Login failed');
@@ -101,13 +134,13 @@ export const registerDriver = createAsyncThunk(
       if (axios.isAxiosError(error)) {
         if (!error.response) {
           return rejectWithValue(
-            'Cannot reach API server. Check EXPO_PUBLIC_API_URL and that your phone can access backend on port 3000.'
+            'Cannot reach API server. Check EXPO_PUBLIC_API_URL (or default production API) and your internet connection.'
           );
         }
-        const message =
-          (error.response?.data as { message?: string } | undefined)?.message ||
-          error.message ||
-          'Registration failed';
+        const message = parseErrorMessage(
+          error.response?.data,
+          error.message || 'Registration failed'
+        );
         return rejectWithValue(message);
       }
       return rejectWithValue('Registration failed');
