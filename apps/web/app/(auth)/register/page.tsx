@@ -94,7 +94,11 @@ export default function RegisterPage() {
       setDone(true);
       setTimeout(() => router.push(`/check-email?email=${form.email}`), 1800);
     } catch (err: any) {
-      setError(err?.response?.data?.message ?? "Une erreur est survenue.");
+      setError(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Une Erreur est survenue",
+      );
     } finally {
       setLoading(false);
     }

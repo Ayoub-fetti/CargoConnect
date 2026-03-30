@@ -22,8 +22,12 @@ export default function LoginPage() {
       if (role === "ADMIN") router.push("/dashboard/admin");
       else if (role === "COMPANY") router.push("/dashboard/company");
       else router.push("/mobile-only");
-    } catch {
-      setError("Email ou mot de passe incorrect.");
+    } catch (err: any) {
+      setError(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Une Erreur est survenue",
+      );
     } finally {
       setLoading(false);
     }

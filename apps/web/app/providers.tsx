@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { Provider } from "react-redux";
+import { Toaster } from "sonner";
 import { store } from "../store";
 import { setCredentials } from "../store/slices/authSlice";
 
@@ -23,6 +24,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
       <AuthRehydrator>{children}</AuthRehydrator>
+      <Toaster position="top-right" richColors />
     </Provider>
   );
 }

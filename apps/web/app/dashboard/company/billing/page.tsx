@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { companyService } from "../../../../services/company.service";
+import { toastAlert, toastConfirm } from "../../../../lib/toast";
 
 const PLANS = [
   {
@@ -62,11 +64,25 @@ export default function BillingPage() {
   };
 
   const handleCancel = async () => {
-    if (!confirm("Annuler votre abonnement à la fin de la période ?")) return;
+    const confirmed = await toastConfirm({
+      title: "Annuler votre abonnement à la fin de la période ?",
+      description: "L'abonnement restera actif jusqu'a la fin de la periode.",
+      confirmLabel: "Confirmer",
+      cancelLabel: "Garder",
+    });
+
+    if (!confirmed) {
+      toastAlert("Annulation interrompue");
+      return;
+    }
+
     setCancelling(true);
     try {
       await companyService.cancelSubscription();
+      toast.success("Abonnement programme pour annulation");
       loadStatus();
+    } catch {
+      toast.error("Impossible d'annuler l'abonnement");
     } finally {
       setCancelling(false);
     }

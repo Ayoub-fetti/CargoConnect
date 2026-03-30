@@ -27,6 +27,7 @@ export default function MissionsPage() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchMissions();
@@ -34,6 +35,7 @@ export default function MissionsPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     setSaving(true);
     try {
       await missionService.create({
@@ -47,18 +49,25 @@ export default function MissionsPage() {
       setShowForm(false);
       setForm(EMPTY);
       fetchMissions();
+    } catch (err: any) {
+      setError(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Une Erreur est survenue",
+      );
     } finally {
       setSaving(false);
     }
   };
 
   const fields = [
-    { name: "title", label: "Titre", type: "text", col: 2 },
-    { name: "origin", label: "Origine", type: "text" },
-    { name: "destination", label: "Destination", type: "text" },
-    { name: "cargoType", label: "Type de cargaison", type: "text" },
-    { name: "weight", label: "Poids (kg)", type: "number" },
-    { name: "price", label: "Prix (MAD)", type: "number" },
+    { name: "title", label: "Titre *", type: "text", col: 2 },
+    { name: "origin", label: "Origine *", type: "text" },
+    { name: "destination", label: "Destination *", type: "text" },
+    { name: "cargoType", label: "Type de cargaison *", type: "text" },
+    { name: "weight", label: "Poids (kg) *", type: "number" },
+    { name: "price", label: "Prix (MAD) *", type: "number" },
+    { name: "estimatedDuration", label: "Durée estimée", type: "text" },
     { name: "departureDate", label: "Date de départ", type: "date" },
     {
       name: "requiredLicenses",
@@ -89,6 +98,12 @@ export default function MissionsPage() {
         >
           {showForm ? "Annuler" : "+ Nouvelle mission"}
         </button>
+
+        {error && (
+          <p className="absolute top-full mt-3 text-xs font-medium text-red-500">
+            {error}
+          </p>
+        )}
       </div>
 
       {/* Create form */}

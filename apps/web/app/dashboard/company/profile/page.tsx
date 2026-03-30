@@ -14,6 +14,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchProfile();
@@ -32,6 +33,7 @@ export default function ProfilePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     setSaving(true);
     setSuccess(false);
     try {
@@ -39,6 +41,12 @@ export default function ProfilePage() {
       await fetchProfile();
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
+    } catch (err: any) {
+      setError(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Une Erreur est survenue",
+      );
     } finally {
       setSaving(false);
     }
@@ -167,6 +175,13 @@ export default function ProfilePage() {
               {success && (
                 <p className="text-xs font-semibold text-black flex items-center gap-2">
                   ✓ Profil mis à jour
+                </p>
+              )}
+            </div>
+            <div className="h-4">
+              {error && (
+                <p className="text-xs font-semibold text-red flex items-center gap-2">
+                  {error}
                 </p>
               )}
             </div>

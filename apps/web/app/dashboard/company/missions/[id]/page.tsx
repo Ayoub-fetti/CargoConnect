@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { missionService } from "../../../../../services/mission.service";
+import { toastAlert, toastConfirm } from "../../../../../lib/toast";
 import Link from "next/link";
 
 const STATUS_OPTIONS = ["OPEN", "IN_PROGRESS", "COMPLETED", "CANCELLED"];
@@ -66,9 +68,25 @@ export default function MissionDetailPage() {
   };
 
   const handleDelete = async () => {
-    if (!confirm("Delete this mission?")) return;
-    await missionService.delete(id);
-    router.push("/dashboard/company/missions");
+    const confirmed = await toastConfirm({
+      title: "Delete this mission?",
+      description: "This action cannot be undone.",
+      confirmLabel: "Delete",
+      cancelLabel: "Keep",
+    });
+
+    if (!confirmed) {
+      toastAlert("Deletion cancelled");
+      return;
+    }
+
+    try {
+      await missionService.delete(id);
+      toast.success("Mission deleted");
+      router.push("/dashboard/company/missions");
+    } catch {
+      toast.error("Failed to delete mission");
+    }
   };
 
   if (!mission) return <p className="text-sm text-gray-400">Loading...</p>;
