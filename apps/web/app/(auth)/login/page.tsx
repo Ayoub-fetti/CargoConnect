@@ -3,7 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import * as yup from "yup";
 import { useAuth } from "../../../hooks/useAuth";
+
+const loginSchema = yup.object({
+  email: yup
+    .string()
+    .trim()
+    .email("Veuillez saisir une adresse email valide.")
+    .required("L'email est requis."),
+  password: yup.string().required("Le mot de passe est requis."),
+});
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -16,9 +26,26 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    const payload = {
+      email: email.trim(),
+      password,
+    };
+
+    try {
+      await loginSchema.validate(payload, { abortEarly: true });
+    } catch (err) {
+      if (err instanceof yup.ValidationError) {
+        setError(err.message);
+        return;
+      }
+      setError("Une Erreur est survenue");
+      return;
+    }
+
     setLoading(true);
     try {
-      const role = await login(email, password);
+      const role = await login(payload.email, payload.password);
       if (role === "ADMIN") router.push("/dashboard/admin");
       else if (role === "COMPANY") router.push("/dashboard/company");
       else router.push("/mobile-only");

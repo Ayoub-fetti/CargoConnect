@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import * as yup from "yup";
 import { authService } from "../../../services/auth.service";
 
 const steps = [
@@ -35,6 +36,23 @@ const steps = [
   },
 ];
 
+const registerSchema = yup.object({
+  companyName: yup
+    .string()
+    .trim()
+    .required("Le nom de l'entreprise est requis."),
+  email: yup
+    .string()
+    .trim()
+    .email("Veuillez saisir une adresse email valide.")
+    .required("L'email est requis."),
+  password: yup
+    .string()
+    .min(8, "Le mot de passe doit contenir au moins 8 caractères.")
+    .required("Le mot de passe est requis."),
+  location: yup.string().trim().required("La localisation est requise."),
+});
+
 export default function RegisterPage() {
   const router = useRouter();
   const [current, setCurrent] = useState(0);
@@ -53,14 +71,22 @@ export default function RegisterPage() {
   const currentField = steps[current].name as keyof typeof form;
   const progress = ((current + 1) / steps.length) * 100;
 
-  const goNext = () => {
-    if (!form[currentField].trim()) {
-      setError("Ce champ est requis.");
+  const goNext = async () => {
+    setError("");
+
+    try {
+      await registerSchema.validateAt(currentField, form);
+    } catch (err) {
+      if (err instanceof yup.ValidationError) {
+        setError(err.message);
+        return;
+      }
+      setError("Une Erreur est survenue");
       return;
     }
-    setError("");
+
     if (current === steps.length - 1) {
-      handleSubmit();
+      await handleSubmit();
       return;
     }
     setDirection("next");
@@ -83,16 +109,33 @@ export default function RegisterPage() {
   };
 
   const handleSubmit = async () => {
+    const payload = {
+      companyName: form.companyName.trim(),
+      email: form.email.trim(),
+      password: form.password,
+      location: form.location.trim(),
+    };
+
+    setError("");
+    try {
+      await registerSchema.validate(payload, { abortEarly: true });
+    } catch (err) {
+      if (err instanceof yup.ValidationError) {
+        setError(err.message);
+        return;
+      }
+      setError("Une Erreur est survenue");
+      return;
+    }
+
     setLoading(true);
     try {
-      await authService.registerCompany({
-        companyName: form.companyName,
-        email: form.email,
-        password: form.password,
-        location: form.location,
-      });
+      await authService.registerCompany(payload);
       setDone(true);
-      setTimeout(() => router.push(`/check-email?email=${form.email}`), 1800);
+      setTimeout(
+        () => router.push(`/check-email?email=${payload.email}`),
+        1800,
+      );
     } catch (err: any) {
       setError(
         err?.response?.data?.message ||

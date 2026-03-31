@@ -21,6 +21,8 @@ export class SubscriptionsService {
     this.stripe = new Stripe(this.config.get<string>('STRIPE_SECRET_KEY')!);
   }
 
+  // si aucune subscription pour la company, l’API crée
+
   async getOrCreateSubscription(companyId: string): Promise<Subscription> {
     let sub = await this.subModel.findOne({ companyId });
     if (!sub) {
@@ -85,7 +87,7 @@ export class SubscriptionsService {
     if (!customerId) {
       const customer = await this.stripe.customers.create({
         email,
-        metadata: { companyId: companyIdStr }, // fix: plain string
+        metadata: { companyId: companyIdStr },
       });
       customerId = customer.id;
       sub.stripeCustomerId = customerId;
