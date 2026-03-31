@@ -12,7 +12,6 @@ async function bootstrap() {
   });
   app.setGlobalPrefix('api');
 
-  // Files are now served from Azure Blob Storage
   // app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   app.use(
@@ -24,10 +23,6 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.enableCors();
-  // app.enableCors({
-  //   origin: ['http://localhost:3000', 'https://your-app.vercel.app'],
-  //   credentials: true,
-  // });
   app.useGlobalFilters(new AllExceptionsFilter());
 
   const swaggerConfig = new DocumentBuilder()

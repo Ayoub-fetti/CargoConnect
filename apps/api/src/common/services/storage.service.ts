@@ -2,6 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { BlobServiceClient, ContainerClient } from '@azure/storage-blob';
 
+// Handle file uploads to Azure Blob Storage
 @Injectable()
 export class StorageService implements OnModuleInit {
   private blobServiceClient: BlobServiceClient;
@@ -39,17 +40,17 @@ export class StorageService implements OnModuleInit {
           await this.blobServiceClient.createContainer(this.containerName, {
             access: 'blob',
           });
-          console.log(`✓ Azure Storage container '${this.containerName}' created`);
+          console.log(
+            ` Azure Storage container '${this.containerName}' created`,
+          );
         } catch (createError) {
           console.error(
-            `✗ Failed to create Azure Storage container: ${createError.message}`,
+            ` Failed to create Azure Storage container: ${createError.message}`,
           );
           throw createError;
         }
       } else {
-        console.error(
-          `✗ Failed to connect to Azure Storage: ${error.message}`,
-        );
+        console.error(`✗ Failed to connect to Azure Storage: ${error.message}`);
         throw error;
       }
     }
@@ -58,13 +59,15 @@ export class StorageService implements OnModuleInit {
       // Keep container readable from direct URLs returned by uploadFile.
       await this.containerClient.setAccessPolicy('blob');
     } catch (error) {
-      const code = (error as any)?.code;
+      const code = error?.code;
       if (code === 'PublicAccessNotPermitted') {
         console.warn(
-          "Azure account blocks public access. Direct blob URLs will 404 unless you use SAS or API proxy.",
+          'Azure account blocks public access. Direct blob URLs will 404 unless you use SAS or API proxy.',
         );
       } else {
-        console.warn(`Could not set container public access: ${(error as any)?.message || error}`);
+        console.warn(
+          `Could not set container public access: ${error?.message || error}`,
+        );
       }
     }
   }
@@ -97,7 +100,9 @@ export class StorageService implements OnModuleInit {
       return blockBlobClient.url;
     } catch (error) {
       console.error('Azure Storage upload error:', error);
-      throw new Error(`Failed to upload file to Azure Blob Storage: ${error.message}`);
+      throw new Error(
+        `Failed to upload file to Azure Blob Storage: ${error.message}`,
+      );
     }
   }
 

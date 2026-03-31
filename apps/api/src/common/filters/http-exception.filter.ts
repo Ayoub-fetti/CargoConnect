@@ -8,6 +8,8 @@ import {
 import { Response } from 'express';
 import { MulterError } from 'multer';
 
+// Global exception filter to handle all exceptions and provide consistent error responses
+
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {

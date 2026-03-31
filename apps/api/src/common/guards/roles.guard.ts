@@ -3,6 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { Role } from '../../database/schemas/user.schema';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 
+// Enforces role-based access control
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}

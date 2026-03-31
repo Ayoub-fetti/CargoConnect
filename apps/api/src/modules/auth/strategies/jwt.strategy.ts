@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { User } from '../../../database/schemas/user.schema';
 
+// verifier le token,  charger l'utilisateur,  securiser les routes
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(

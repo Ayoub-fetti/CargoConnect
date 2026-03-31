@@ -12,6 +12,7 @@ import {
 } from '../../database/schemas/subscription.schema';
 import { Role } from '../../database/schemas/user.schema';
 
+// Checks subscription status
 @Injectable()
 export class SubscriptionGuard implements CanActivate {
   constructor(
