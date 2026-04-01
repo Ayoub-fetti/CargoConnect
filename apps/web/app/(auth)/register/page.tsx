@@ -292,6 +292,13 @@ export default function RegisterPage() {
           <Link href="/login" className="font-bold text-black hover:underline">
             Se connecter
           </Link>
+          <br />
+          <Link
+            href="/"
+            className="mt-10 text-xs text-gray-800 text-center hover:underline"
+          >
+            Retour à la page d'accueil
+          </Link>
         </p>
       </div>
 

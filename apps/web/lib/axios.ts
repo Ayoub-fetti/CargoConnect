@@ -5,12 +5,14 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// Ajouter automatiquement le token a chaque requete
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken");
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
+// Si tout va bien retourne la reponse directe , sinon error
 api.interceptors.response.use(
   (res) => res,
   async (error) => {

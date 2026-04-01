@@ -74,6 +74,13 @@ export default function LoginPage() {
       {/* Content */}
       <div className="relative z-10 w-full max-w-md px-6">
         <div className="rounded-2xl bg-white/95 backdrop-blur p-8 shadow-xl">
+          <Link
+            href="/"
+            className="mt-10 text-xs text-gray-800 text-center hover:underline hover:underline"
+          >
+            <i className="fa-solid fa-arrow-left"></i>
+            Retour à la page d'accueil
+          </Link>
           <h1 className="text-3xl font-black text-black">Connexion</h1>
 
           <p className="mt-2 text-sm text-gray-500">
