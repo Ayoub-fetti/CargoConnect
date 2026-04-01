@@ -12,8 +12,10 @@ export const store = configureStore({
   },
 });
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export type RootState = ReturnType<typeof store.getState>; // getState fonction envoie tout l'etat de store redux
+export type AppDispatch = typeof store.dispatch; // dispatch il permet d'envoyer des actions dans redux
 
-export const useAppDispatch = () => useDispatch<AppDispatch>();
-export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+// Hooks pour eviter de taper useDispatch/useSelector partout
+
+export const useAppDispatch = () => useDispatch<AppDispatch>(); // pour lire
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector; // pour modifier

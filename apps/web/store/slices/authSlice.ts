@@ -15,6 +15,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setCredentials(
+      // appel apres login
       state,
       action: PayloadAction<{ accessToken: string; user: AuthState["user"] }>,
     ) {
@@ -22,6 +23,7 @@ const authSlice = createSlice({
       state.user = action.payload.user;
     },
     clearCredentials(state) {
+      // appel apres logout
       state.accessToken = null;
       state.user = null;
     },
