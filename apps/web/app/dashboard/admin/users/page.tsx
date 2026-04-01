@@ -5,7 +5,7 @@ import { adminService } from "../../../../services/admin.service";
 type User = {
   _id: string;
   fullName?: string;
-  name?: string;
+  companyName?: string;
   email: string;
   role: string;
   isActive: boolean;
@@ -19,8 +19,8 @@ const roleLabels: Record<string, string> = {
 
 const getDisplayName = (u: User): string => {
   if (u.role === "DRIVER") return u.fullName ?? "—";
-  if (u.role === "COMPANY") return u.name ?? "—";
-  return u.fullName ?? u.name ?? "—";
+  if (u.role === "COMPANY") return u.companyName ?? "—";
+  return u.fullName ?? u.companyName ?? "—";
 };
 
 export default function AdminUsersPage() {

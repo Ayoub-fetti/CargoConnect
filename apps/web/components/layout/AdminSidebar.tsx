@@ -55,9 +55,9 @@ export default function AdminSidebar() {
       {/* Bottom — logout */}
       <button
         onClick={handleLogout}
-        className="w-full rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-gray-400 hover:text-black hover:bg-gray-50 transition-colors duration-150"
+        className="w-full rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-red-500 hover:bg-red-200 transition-colors duration-150"
       >
-        Déconnexion →
+        Déconnexion
       </button>
     </aside>
   );
