@@ -6,15 +6,10 @@ type User = {
   _id: string;
   fullName?: string;
   companyName?: string;
+  name?: string;
   email: string;
   role: string;
   isActive: boolean;
-};
-
-const roleLabels: Record<string, string> = {
-  "": "Tous",
-  COMPANY: "Entreprises",
-  DRIVER: "Chauffeurs",
 };
 
 const getDisplayName = (u: User): string => {
@@ -60,23 +55,6 @@ export default function AdminUsersPage() {
           {users.length}{" "}
           <span className="font-medium text-gray-400">résultats</span>
         </p>
-      </div>
-
-      {/* Filters */}
-      <div className="flex gap-2">
-        {["", "COMPANY", "DRIVER"].map((r) => (
-          <button
-            key={r}
-            onClick={() => setRole(r)}
-            className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-200 ${
-              role === r
-                ? "bg-black text-white"
-                : "border border-gray-200 text-gray-400 hover:border-black hover:text-black"
-            }`}
-          >
-            {roleLabels[r]}
-          </button>
-        ))}
       </div>
 
       {/* Table */}
